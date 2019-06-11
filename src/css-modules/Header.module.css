@@ -1,0 +1,32 @@
+.headerWrapper {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  color: white;
+  background-color: #20232a;
+  display: grid;
+  grid-template-columns: 1fr, 1fr, 1fr;
+}
+.titleWrapper {
+  grid-area: 2 / 2 / 2 / 2;
+  display: flex;
+  align-items: center;
+}
+.logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 10vmin;
+  pointer-events: none;
+}
+h1 {
+  display: inline;
+}
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* //61dafb */
