@@ -1,0 +1,27 @@
+.container {
+  padding-top: 10vmin;
+}
+.gameHeader {
+  text-align: center;
+}
+p {
+  padding: 0 10px;
+}
+i {
+  padding: 0 5px;
+}
+.gameHeader p {
+  display: inline-block;
+  margin-right: 5px;
+}
+.gameControls {
+  padding-top: 10px;
+  text-align: center;
+}
+.gameControls button {
+  padding: 5px;
+  margin: 0 5px;
+  background-color: #FFF;
+  border: 1px black solid;
+  border-radius: 20%;
+}

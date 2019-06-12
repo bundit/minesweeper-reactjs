@@ -1,0 +1,12 @@
+.square {
+  width: 25px;;
+  height: 25px;
+  border: 1px grey solid;
+  margin: 0 auto;
+  background-color: #CCC;
+  /* display: inline-block; */
+  overflow: hidden;
+  padding: 0;
+  box-sizing: border-box;
+  align-items: stretch;
+}
