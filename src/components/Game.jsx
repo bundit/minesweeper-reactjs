@@ -7,25 +7,10 @@ import styles from '../css-modules/Game.module.css';
 class Game extends React.Component {
   constructor(props) {
     super(props);
-    this.bombIndices = this.generateRandomBombs();
-    console.log(this.bombIndices);
+    // this.bombIndices = this.generateRandomBombs();
+    // console.log(this.bombIndices);
 
     this.handleClick = this.handleClick.bind(this);
-  }
-
-  generateRandomBombs() {
-    let bombIndices = [];
-    let length = this.props.rows*this.props.columns;
-    for (let i = 0; i < this.props.bombs; i++) {
-      let index = Math.floor(Math.random() * (length-1));
-      if (!bombIndices.includes(index)) {
-        bombIndices.push(index);
-      }
-      else {
-        i--;
-      }
-    }
-    return bombIndices;
   }
 
   render() {
@@ -37,7 +22,7 @@ class Game extends React.Component {
           <p><i className="fa fa-clock-o"/>{this.props.seconds}</p>
         </div>
         <div>
-          <Board rows={this.props.rows} columns={this.props.columns} handleClick={this.handleClick}/>
+          <Board rows={this.props.rows} columns={this.props.columns} handleClick={this.handleClick} board={this.props.board}/>
         </div>
         <div className={styles.gameControls}>
           <button> Restart </button>
@@ -61,6 +46,8 @@ const mapStateToProps = (state) => ({
   rows: state.rows,
   columns: state.columns,
   bombs: state.bombs,
-  seconds: state.seconds
+  seconds: state.seconds,
+  board: state.board
 });
+
 export default connect(mapStateToProps)(Game);

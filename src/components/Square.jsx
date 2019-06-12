@@ -5,7 +5,7 @@ import styles from '../css-modules/Square.module.css'
 function Square(props) {
   return (
     <button onClick={() => props.handleClick(props.index)} className={styles.square}>
-      <div/>
+      {props.state.revealed && props.state.value}
     </button>
   );
 }
