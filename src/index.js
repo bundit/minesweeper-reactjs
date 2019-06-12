@@ -47,17 +47,24 @@ function reducer(state = initialState, action) {
         if (index+col < len)  newBoard[index+col].value++;
         if (index+col+1 < len)newBoard[index+col+1].value++;
       });
+      newBoard.forEach(cell => {
+        if (Number.isNaN(cell.value)) cell.value = 'b';
+      })
 
       return {...state, board: newBoard};
 
     case "CLICK-CELL":
-      const board = state.board.slice(0);
-      console.log(state.board);
-      board[action.index].revealed = true;
+      const newClickedBoard = state.board.slice(0);
+      const newCell = {
+        revealed: true,
+        value: state.board[action.index].value,
+      }
+      newClickedBoard[action.index] = newCell;
+      // newClickedBoard[action.index].revealed = newClickedBoard[action.index].value;
 
       return {
         ...state,
-        board: board,
+        board: newClickedBoard,
       }
     default:
       return state;
