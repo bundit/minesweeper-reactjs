@@ -9,6 +9,8 @@ class Game extends React.Component {
     super(props);
     this.bombIndices = this.generateRandomBombs();
     console.log(this.bombIndices);
+
+    this.handleClick = this.handleClick.bind(this);
   }
 
   generateRandomBombs() {
@@ -25,6 +27,7 @@ class Game extends React.Component {
     }
     return bombIndices;
   }
+
   render() {
     console.log(this.props.rows);
     return (
@@ -34,7 +37,7 @@ class Game extends React.Component {
           <p><i className="fa fa-clock-o"/>{this.props.seconds}</p>
         </div>
         <div>
-          <Board rows={this.props.rows} columns={this.props.columns}/>
+          <Board rows={this.props.rows} columns={this.props.columns} handleClick={this.handleClick}/>
         </div>
         <div className={styles.gameControls}>
           <button> Restart </button>
@@ -46,7 +49,7 @@ class Game extends React.Component {
   }
 
   handleClick(i) {
-
+    this.props.dispatch({type: "CLICK-CELL", index: i})
   }
 
   undo() {

@@ -11,19 +11,35 @@ import { Provider } from "react-redux";
 const initialState = {
   rows: 10,
   columns: 8,
-  get board () {
-    Array(this.rows*this.columns).fill(null)
-  }
+  get board() {
+    return Array(this.rows*this.columns).fill(null);
+  },
+  bombs: 10,
+  seconds: 0
 }
+// get c () {
+//     return this.a + this.b;
+//   }
 
 // Reducer methods
 function reducer(state = initialState, action) {
-  return state;
+  console.log(action);
+  switch(action.type) {
+    case "CLICK-CELL":
+      const board = [...state.board]
+      board[action.index] = 'x';
+      console.log(action.index);
+      return {
+        ...state,
+        board: board,
+      }
+    default:
+      return state;
+  }
 }
 
 // Create Redux store
 const store = createStore(reducer);
-
 
 ReactDOM.render(
   <Provider store={store}>

@@ -7,26 +7,14 @@ class Board extends React.Component {
   constructor(props) {
     super(props);
     uniqueId.enableUniqueIds(this);
-    console.log('asdfjals');
-    console.log(props.rows);
-  }
-  renderSquare(i) {
-    return (
-      <Square />
-    )
-  }
-
-  toggleSquare(i) {
-
   }
 
   render() {
     const squares = [];
-    for (let i = 0; i < this.props.rows; i++) {
-      const row = [];
-      for (let j = 0; j < this.props.columns; j++) {
-        squares.push(<Square key={this.nextUniqueId()}/>);
-      }
+    let length = this.props.rows*this.props.columns;
+
+    for (let i = 0; i < length; i++) {
+      squares.push(<Square key={i} index={i} handleClick={this.props.handleClick}/>);
     }
 
     const boardStyle = {
