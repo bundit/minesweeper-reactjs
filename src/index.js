@@ -12,23 +12,34 @@ const initialState = {
   rows: 10,
   columns: 8,
   get board() {
-    return Array(this.rows*this.columns).fill(null);
+    return new Array(this.rows*this.columns).fill(null);
   },
   bombs: 10,
   seconds: 0
 }
-// get c () {
-//     return this.a + this.b;
-//   }
 
 // Reducer methods
 function reducer(state = initialState, action) {
-  console.log(action);
+
   switch(action.type) {
+    case "CONFIGURE-NEW-BOARD":
+      const newBoard = state.board.slice(0);
+      // Randomize bombs
+      let bombIndices = generateRandomBombs(state.rows, state.columns, state.bombs);
+      // Create cells
+      for (let i = 0; i < newBoard.length; i++) {
+        let obj = {revealed: false, value: null};
+        if (bombIndices.includes(i)) {
+          obj.value = 'b';
+        }
+        newBoard[i] = obj;
+      }
+      return {board: newBoard, ...state};
     case "CLICK-CELL":
       const board = [...state.board]
-      board[action.index] = 'x';
-      console.log(action.index);
+      console.log(state.board);
+      board[action.index].revealed = true;
+
       return {
         ...state,
         board: board,
@@ -40,7 +51,7 @@ function reducer(state = initialState, action) {
 
 // Create Redux store
 const store = createStore(reducer);
-
+store.dispatch({type: "CONFIGURE-NEW-BOARD"});
 ReactDOM.render(
   <Provider store={store}>
     <App />
@@ -50,3 +61,21 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+
+///
+
+function generateRandomBombs(rows, columns, bombs) {
+  let bombIndices = [];
+  let length = rows*columns;
+  for (let i = 0; i < bombs; i++) {
+    let index = Math.floor(Math.random() * (length-1));
+    if (!bombIndices.includes(index)) {
+      bombIndices.push(index);
+    }
+    else {
+      i--;
+    }
+  }
+  return bombIndices;
+}
