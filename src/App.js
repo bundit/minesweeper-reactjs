@@ -1,26 +1,18 @@
 import React from 'react';
-import { createStore } from "redux";
-import { Provider } from "react-redux";
 import logo from './logo.svg';
 
 // Components
 import Header from './components/Header.jsx';
-
-const initialState = {
-  rows: 8,
-  columns: 10,
-}
-
-function reducer(state = initialState, action) {}
-// Create Redux store
-const store = createStore(reducer);
+import Game from './components/Game.jsx';
+import Footer from './components/Footer.jsx';
 
 function App() {
   return (
-    <Provider store={store}>
+    <div className="container">
       <Header />
-      
-    </Provider>
+
+      <Game />
+    </div>
   );
 }
 
