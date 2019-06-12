@@ -5,7 +5,26 @@ import { connect } from 'react-redux';
 import styles from '../css-modules/Game.module.css';
 
 class Game extends React.Component {
+  constructor(props) {
+    super(props);
+    this.bombIndices = this.generateRandomBombs();
+    console.log(this.bombIndices);
+  }
 
+  generateRandomBombs() {
+    let bombIndices = [];
+    let length = this.props.rows*this.props.columns;
+    for (let i = 0; i < this.props.bombs; i++) {
+      let index = Math.floor(Math.random() * (length-1));
+      if (!bombIndices.includes(index)) {
+        bombIndices.push(index);
+      }
+      else {
+        i--;
+      }
+    }
+    return bombIndices;
+  }
   render() {
     console.log(this.props.rows);
     return (
@@ -34,6 +53,7 @@ class Game extends React.Component {
 
   }
 }
+
 const mapStateToProps = (state) => ({
   rows: state.rows,
   columns: state.columns,
