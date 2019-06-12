@@ -28,15 +28,30 @@ function reducer(state = initialState, action) {
       let bombIndices = generateRandomBombs(state.rows, state.columns, state.bombs);
       // Create cells
       for (let i = 0; i < newBoard.length; i++) {
-        let obj = {revealed: false, value: null};
+        let obj = {revealed: false, value: 0};
         if (bombIndices.includes(i)) {
           obj.value = 'b';
         }
         newBoard[i] = obj;
       }
-      return {board: newBoard, ...state};
+
+      const col = state.columns;
+      const len = newBoard.length;
+      bombIndices.forEach(index => {
+        if (index-1 >= 0)     newBoard[index-1].value++;
+        if (index-col+1 >= 0) newBoard[index-col+1].value++;
+        if (index-col >= 0)   newBoard[index-col].value++;
+        if (index-col-1 >= 0) newBoard[index-col-1].value++;
+        if (index+1 < len)    newBoard[index+1].value++;
+        if (index+col-1 < len)newBoard[index+col-1].value++;
+        if (index+col < len)  newBoard[index+col].value++;
+        if (index+col+1 < len)newBoard[index+col+1].value++;
+      });
+
+      return {...state, board: newBoard};
+
     case "CLICK-CELL":
-      const board = [...state.board]
+      const board = state.board.slice(0);
       console.log(state.board);
       board[action.index].revealed = true;
 
