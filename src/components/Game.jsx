@@ -7,14 +7,42 @@ import styles from '../css-modules/Game.module.css';
 class Game extends React.Component {
   constructor(props) {
     super(props);
-    // this.bombIndices = this.generateRandomBombs();
-    // console.log(this.bombIndices);
-
     this.handleClick = this.handleClick.bind(this);
   }
 
+  handleClick(i) {
+    // Start the clock if first click
+    if (this.props.seconds === 0)
+      this.props.dispatch({type: "START-CLOCK"});
+
+    // Dispatch
+    if (!this.props.board[i].revealed)
+      this.props.dispatch({type: "CLICK-CELL", index: i});
+
+    // Check empty cells around
+    if (this.props.board[i].value === 0) {
+      setTimeout(() => this.checkLeftDown(i), 5);
+      setTimeout(() => this.checkRightUp(i), 5);
+    }
+  }
+
+  checkLeftDown(i, next) {
+    let col = this.props.columns;
+    if (i-1 >= 0 && i % col !== 0 && this.props.board[i-1].revealed === false &&    this.props.board[i-1].value === 0) this.handleClick(i-1);
+    if (i-col >= 0 && this.props.board[i-col].revealed === false && this.props.board[i-col].value === 0) this.handleClick(i-col);
+  }
+  checkRightUp(i) {
+    let len = this.props.rows * this.props.columns;
+    let col = this.props.columns;
+    if (i+1 < len && (i+1) % col !== 0 && this.props.board[i+1].revealed === false &&    this.props.board[i+1].value === 0) this.handleClick(i+1);
+    if (i+col < len && this.props.board[i+col].revealed === false &&  this.props.board[i+col].value === 0) this.handleClick(i+col);
+  }
+
+  undo() {
+
+  }
+
   render() {
-    // console.log(this.props.rows);
     return (
       <div className={styles.container}>
         <div className={styles.gameHeader}>
@@ -33,36 +61,6 @@ class Game extends React.Component {
       </div>
     );
   }
-
-  handleClick(i) {
-    const board = this.props.board;
-    const col = this.props.columns;
-    const len = this.props.rows * col;
-    if (this.props.seconds === 0) this.props.dispatch({type: "START-CLOCK"});
-
-    this.props.dispatch({type: "CLICK-CELL", index: i});
-
-
-    if (board[i].value === 0) {
-      let stack = [];
-      stack.push(board[i].index);
-
-      while (stack.length) {
-        let curr = stack.pop();
-        this.props.dispatch({type: "CLICK-CELL", index: curr});
-
-        if (i-1 >= 0 && !board[i-1].revealed && board[i-1].value === 0) stack.push(i-1);
-        // if (i-col >= 0 && !board[i-col].revealed && board[i-col].value === 0) stack.push(i-col);
-        // if (i+1 < len && !board[i+1].revealed && board[i+1].value === 0) stack.push(i+1);
-        // if (i+col < len && !board[i+col].revealed && board[i+col].value === 0) stack.push(i+col);
-      }
-    }
-    console.log(this.props.board);
-  }
-
-  undo() {
-
-  }
 }
 
 const mapStateToProps = (state) => ({
@@ -70,7 +68,8 @@ const mapStateToProps = (state) => ({
   columns: state.columns,
   bombs: state.bombs,
   seconds: state.seconds,
-  board: state.board
+  board: state.board,
+  numRevealed: state.numRevealed
 });
 
 export default connect(mapStateToProps)(Game);

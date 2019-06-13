@@ -16,18 +16,20 @@ const initialState = {
   },
   bombs: 10,
   seconds: 0,
-  started: false
+  started: false,
+  numRevealed: 0
 }
 
 // Reducer methods
 function reducer(state = initialState, action) {
   const col = state.columns;
   const row = state.rows;
-  const index = action.index;
+  let index = action.index;
   const len = col * row;
 
   switch(action.type) {
     case "CONFIGURE-NEW-BOARD":
+      // Copy board
       const newBoard = state.board.slice(0);
       // Randomize bombs
       let bombIndices = generateRandomBombs(state.rows, state.columns, state.bombs);
@@ -37,7 +39,7 @@ function reducer(state = initialState, action) {
           index: i,
           revealed: false,
           value: 0,
-          neighbors: []
+          // neighbors: []
         };
         if (bombIndices.includes(i)) {
           obj.value = 'b';
@@ -56,33 +58,30 @@ function reducer(state = initialState, action) {
         if (index+col < len)  newBoard[index+col].value++;
         if (index+col+1 < len)newBoard[index+col+1].value++;
       });
+
+      // Set bombs
       newBoard.forEach((cell, i) => {
         if (Number.isNaN(cell.value)) cell.value = 'b';
-        if (cell.value === 0) {
-          let neighbors = [];
-          if (i-1 >= 0 && newBoard[i-1].value === 0) neighbors.push(i-1);
-          if (i-col >= 0 && newBoard[i-col].value === 0) neighbors.push(i-col);
-          if (i+1 < len && newBoard[i+1].value === 0) neighbors.push(i+1);
-          if (i+col < len && newBoard[i+col].value === 0) neighbors.push(i+col);
-          cell.neighbors = neighbors;
-        }
-      })
+      });
 
-      return {...state, board: newBoard};
+      return {
+        ...state,
+        board: newBoard
+      };
 
     case "CLICK-CELL":
       const newClickedBoard = state.board.slice(0);
+      const numRevealed = state.numRevealed;
       const newCell = {
-        index: state.board[index].index,
+        ...state.board[index],
         revealed: true,
-        value: state.board[index].value,
-        neighbors: state.board[index].neighbors
       }
       newClickedBoard[index] = newCell;
 
       return {
         ...state,
         board: newClickedBoard,
+        numRevealed: numRevealed+1
       }
     case "INCREMENT-TIME":
       let time = state.seconds;
@@ -95,6 +94,7 @@ function reducer(state = initialState, action) {
         ...state,
         started: true
       }
+
     default:
       return state;
   }
