@@ -8,6 +8,7 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
+    this.handleRestart = this.handleRestart.bind(this);
   }
 
   handleClick(i) {
@@ -37,7 +38,9 @@ class Game extends React.Component {
     if (i+1 < len && (i+1) % col !== 0 && this.props.board[i+1].revealed === false &&    this.props.board[i+1].value === 0) this.handleClick(i+1);
     if (i+col < len && this.props.board[i+col].revealed === false &&  this.props.board[i+col].value === 0) this.handleClick(i+col);
   }
-
+  handleRestart() {
+    this.props.dispatch({type: "RESTART-BOARD"});
+  }
   undo() {
 
   }
@@ -54,7 +57,7 @@ class Game extends React.Component {
           <Board rows={this.props.rows} columns={this.props.columns} handleClick={this.handleClick} board={this.props.board}/>
         </div>
         <div className={styles.gameControls}>
-          <button> Restart </button>
+          <button onClick={this.handleRestart}> Restart </button>
           <button> <i className="fa fa-undo"/> </button>
           <button> New Game </button>
         </div>

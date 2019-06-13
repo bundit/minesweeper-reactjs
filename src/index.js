@@ -28,6 +28,7 @@ function reducer(state = initialState, action) {
   const len = col * row;
 
   switch(action.type) {
+    // Make a new board
     case "CONFIGURE-NEW-BOARD":
       // Copy board
       const newBoard = state.board.slice(0);
@@ -68,7 +69,7 @@ function reducer(state = initialState, action) {
         ...state,
         board: newBoard
       };
-
+    // Reveals a cell
     case "CLICK-CELL":
       const newClickedBoard = state.board.slice(0);
       const numRevealed = state.numRevealed;
@@ -83,16 +84,30 @@ function reducer(state = initialState, action) {
         board: newClickedBoard,
         numRevealed: numRevealed+1
       }
+    // Keeps track of time
     case "INCREMENT-TIME":
       let time = state.seconds;
       return state.started ? {
         ...state,
         seconds: ++time
       } : state;
+    // Starts the clock
     case "START-CLOCK":
       return {
         ...state,
         started: true
+      }
+    // Restart board with the same cells
+    case "RESTART-BOARD":
+      const restartBoard = state.board.map(cell => {
+        return {
+          ...cell,
+          revealed: false
+        };
+      });
+      return {
+        ...state,
+        board: restartBoard
       }
 
     default:
