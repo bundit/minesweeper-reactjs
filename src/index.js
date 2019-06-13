@@ -98,6 +98,20 @@ function reducer(state = initialState, action) {
         board: newFlaggedBoard,
         bombs: --bombs,
       } : state;
+    // Unflag a cell
+    case "UNFLAG-CELL":
+      const newUnflaggedBoard = state.board.slice(0);
+      let flagsLeft = state.bombs;
+      const newUnflagged = {
+        ...state.board[index],
+        flagged: false
+      }
+      newUnflaggedBoard[index] = newUnflagged;
+      return {
+        ...state,
+        board: newUnflaggedBoard,
+        bombs: ++flagsLeft
+      }
     // Keeps track of time
     case "INCREMENT-TIME":
       let time = state.seconds;
@@ -116,12 +130,16 @@ function reducer(state = initialState, action) {
       const restartBoard = state.board.map(cell => {
         return {
           ...cell,
-          revealed: false
+          revealed: false,
+          flagged: false
         };
       });
       return {
         ...state,
-        board: restartBoard
+        bombs: 10,
+        board: restartBoard,
+        seconds: 0,
+        started: false
       }
 
     default:

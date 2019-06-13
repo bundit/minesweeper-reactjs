@@ -18,7 +18,7 @@ class Game extends React.Component {
       this.props.dispatch({type: "START-CLOCK"});
 
     // Dispatch
-    if (!this.props.board[i].revealed)
+    if (!this.props.board[i].revealed && !this.props.board[i].flagged)
       this.props.dispatch({type: "CLICK-CELL", index: i});
 
     // Check empty cells around
@@ -29,7 +29,16 @@ class Game extends React.Component {
   }
 
   handleFlag(i) {
-    this.props.dispatch({type: "FLAG-CELL", index: i});
+    // Start the clock if first click
+    if (this.props.seconds === 0)
+      this.props.dispatch({type: "START-CLOCK"});
+
+    if (!this.props.board[i].flagged && this.props.bombs > 0) {
+      this.props.dispatch({type: "FLAG-CELL", index: i});
+    }
+    else if (this.props.board[i].flagged){
+      this.props.dispatch({type: "UNFLAG-CELL", index: i});
+    }
   }
 
   checkLeftDown(i, next) {
