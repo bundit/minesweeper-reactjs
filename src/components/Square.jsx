@@ -4,7 +4,11 @@ import styles from '../css-modules/Square.module.css'
 
 function Square(props) {
   return (
-    <button onClick={() => props.handleClick(props.index)} className={styles.square}>
+    <button
+      className={styles.square}
+      onClick={() => props.handleClick(props.index)}
+      onContextMenu={e => { e.preventDefault(); props.handleFlag(props.index);}}
+    >
       {props.state.revealed && props.state.value}
     </button>
   );

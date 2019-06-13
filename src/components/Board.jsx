@@ -14,7 +14,14 @@ class Board extends React.Component {
     let length = this.props.rows*this.props.columns;
 
     for (let i = 0; i < length; i++) {
-      squares.push(<Square key={i} index={i} handleClick={this.props.handleClick} state={this.props.board[i]}/>);
+      squares.push(<Square
+                    key={i}
+                    index={i}
+                    handleClick={this.props.handleClick}
+                    handleFlag={this.props.handleFlag}
+                    state={this.props.board[i]}
+                    />
+      );
     }
 
     const boardStyle = {

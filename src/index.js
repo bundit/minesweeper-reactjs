@@ -40,7 +40,7 @@ function reducer(state = initialState, action) {
           index: i,
           revealed: false,
           value: 0,
-          // neighbors: []
+          flagged: false
         };
         if (bombIndices.includes(i)) {
           obj.value = 'b';
@@ -84,6 +84,20 @@ function reducer(state = initialState, action) {
         board: newClickedBoard,
         numRevealed: numRevealed+1
       }
+    // Flag a cell
+    case "FLAG-CELL":
+      const newFlaggedBoard = state.board.slice(0);
+      let bombs = state.bombs;
+      const newFlagged = {
+        ...state.board[index],
+        flagged: true
+      }
+      newFlaggedBoard[index] = newFlagged;
+      return !state.board[index].revealed ? {
+        ...state,
+        board: newFlaggedBoard,
+        bombs: --bombs,
+      } : state;
     // Keeps track of time
     case "INCREMENT-TIME":
       let time = state.seconds;

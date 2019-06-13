@@ -9,6 +9,7 @@ class Game extends React.Component {
     super(props);
     this.handleClick = this.handleClick.bind(this);
     this.handleRestart = this.handleRestart.bind(this);
+    this.handleFlag = this.handleFlag.bind(this);
   }
 
   handleClick(i) {
@@ -25,6 +26,10 @@ class Game extends React.Component {
       setTimeout(() => this.checkLeftDown(i), 5);
       setTimeout(() => this.checkRightUp(i), 5);
     }
+  }
+
+  handleFlag(i) {
+    this.props.dispatch({type: "FLAG-CELL", index: i});
   }
 
   checkLeftDown(i, next) {
@@ -54,7 +59,13 @@ class Game extends React.Component {
                                             this.props.seconds < 100 ? "0" + this.props.seconds : this.props.seconds}</p>
         </div>
         <div>
-          <Board rows={this.props.rows} columns={this.props.columns} handleClick={this.handleClick} board={this.props.board}/>
+          <Board
+            rows={this.props.rows}
+            columns={this.props.columns}
+            board={this.props.board}
+            handleClick={this.handleClick}
+            handleFlag={this.handleFlag}
+          />
         </div>
         <div className={styles.gameControls}>
           <button onClick={this.handleRestart}> Restart </button>
