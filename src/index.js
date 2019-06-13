@@ -15,11 +15,16 @@ const initialState = {
     return new Array(this.rows*this.columns).fill(null);
   },
   bombs: 10,
-  seconds: 0
+  seconds: 0,
+  started: false
 }
 
 // Reducer methods
 function reducer(state = initialState, action) {
+  const col = state.columns;
+  const row = state.rows;
+  const index = action.index;
+  const len = col * row;
 
   switch(action.type) {
     case "CONFIGURE-NEW-BOARD":
@@ -28,15 +33,19 @@ function reducer(state = initialState, action) {
       let bombIndices = generateRandomBombs(state.rows, state.columns, state.bombs);
       // Create cells
       for (let i = 0; i < newBoard.length; i++) {
-        let obj = {revealed: false, value: 0};
+        let obj = {
+          index: i,
+          revealed: false,
+          value: 0,
+          neighbors: []
+        };
         if (bombIndices.includes(i)) {
           obj.value = 'b';
         }
         newBoard[i] = obj;
       }
 
-      const col = state.columns;
-      const len = newBoard.length;
+      // const len = newBoard.length;
       bombIndices.forEach(index => {
         if (index-1 >= 0)     newBoard[index-1].value++;
         if (index-col+1 >= 0) newBoard[index-col+1].value++;
@@ -47,8 +56,16 @@ function reducer(state = initialState, action) {
         if (index+col < len)  newBoard[index+col].value++;
         if (index+col+1 < len)newBoard[index+col+1].value++;
       });
-      newBoard.forEach(cell => {
+      newBoard.forEach((cell, i) => {
         if (Number.isNaN(cell.value)) cell.value = 'b';
+        if (cell.value === 0) {
+          let neighbors = [];
+          if (i-1 >= 0 && newBoard[i-1].value === 0) neighbors.push(i-1);
+          if (i-col >= 0 && newBoard[i-col].value === 0) neighbors.push(i-col);
+          if (i+1 < len && newBoard[i+1].value === 0) neighbors.push(i+1);
+          if (i+col < len && newBoard[i+col].value === 0) neighbors.push(i+col);
+          cell.neighbors = neighbors;
+        }
       })
 
       return {...state, board: newBoard};
@@ -56,15 +73,27 @@ function reducer(state = initialState, action) {
     case "CLICK-CELL":
       const newClickedBoard = state.board.slice(0);
       const newCell = {
+        index: state.board[index].index,
         revealed: true,
-        value: state.board[action.index].value,
+        value: state.board[index].value,
+        neighbors: state.board[index].neighbors
       }
-      newClickedBoard[action.index] = newCell;
-      // newClickedBoard[action.index].revealed = newClickedBoard[action.index].value;
+      newClickedBoard[index] = newCell;
 
       return {
         ...state,
         board: newClickedBoard,
+      }
+    case "INCREMENT-TIME":
+      let time = state.seconds;
+      return state.started ? {
+        ...state,
+        seconds: ++time
+      } : state;
+    case "START-CLOCK":
+      return {
+        ...state,
+        started: true
       }
     default:
       return state;
@@ -74,6 +103,7 @@ function reducer(state = initialState, action) {
 // Create Redux store
 const store = createStore(reducer);
 store.dispatch({type: "CONFIGURE-NEW-BOARD"});
+setInterval(() => store.dispatch({type: "INCREMENT-TIME"}), 1000);
 ReactDOM.render(
   <Provider store={store}>
     <App />
