@@ -7,12 +7,14 @@ import styles from '../css-modules/Game.module.css';
 class Game extends React.Component {
   constructor(props) {
     super(props);
+
     this.handleClick = this.handleClick.bind(this);
     this.handleRestart = this.handleRestart.bind(this);
     this.handleFlag = this.handleFlag.bind(this);
   }
 
   handleClick(i) {
+    if (this.props.board[i].revealed === true) return;
     // Start the clock if first click
     if (this.props.seconds === 0)
       this.props.dispatch({type: "START-CLOCK"});
@@ -22,12 +24,11 @@ class Game extends React.Component {
       this.props.dispatch({type: "CLICK-CELL", index: i});
 
     // Check empty cells around
-    if (this.props.board[i].value === 0) {
-      setTimeout(() => this.checkLeftDown(i), 5);
-      setTimeout(() => this.checkRightUp(i), 5);
-    }
-  }
+    if (this.props.board[i].value === 0)
+      this.emptyField(i);
 
+    console.log(this.props.numRevealed);
+  }
   handleFlag(i) {
     // Start the clock if first click
     if (this.props.seconds === 0)
@@ -41,31 +42,30 @@ class Game extends React.Component {
     }
   }
 
-  checkLeftDown(i, next) {
-    let col = this.props.columns;
-    if (i-1 >= 0 && i % col !== 0 && this.props.board[i-1].revealed === false &&    this.props.board[i-1].value === 0) this.handleClick(i-1);
-    if (i-col >= 0 && this.props.board[i-col].revealed === false && this.props.board[i-col].value === 0) this.handleClick(i-col);
-  }
-  checkRightUp(i) {
-    let len = this.props.rows * this.props.columns;
-    let col = this.props.columns;
-    if (i+1 < len && (i+1) % col !== 0 && this.props.board[i+1].revealed === false &&    this.props.board[i+1].value === 0) this.handleClick(i+1);
-    if (i+col < len && this.props.board[i+col].revealed === false &&  this.props.board[i+col].value === 0) this.handleClick(i+col);
-  }
   handleRestart() {
     this.props.dispatch({type: "RESTART-BOARD"});
+    setTimeout(() => console.log(this.props), 1000);
   }
   undo() {
 
   }
 
   render() {
+    let time;
+    const seconds = this.props.seconds;
+    if (seconds < 10)
+      time = `00${seconds}`;
+    else if (seconds < 100)
+      time = `0${seconds}`;
+    else
+      time = seconds;
+
+
     return (
       <div className={styles.container}>
         <div className={styles.gameHeader}>
           <p><i className="fa fa-bomb"/>{this.props.bombs}</p>
-          <p><i className="fa fa-clock-o"/>{this.props.seconds < 10 ? "00" + this.props.seconds :
-                                            this.props.seconds < 100 ? "0" + this.props.seconds : this.props.seconds}</p>
+          <p><i className="fa fa-clock-o"/>{time}</p>
         </div>
         <div>
           <Board
@@ -79,10 +79,78 @@ class Game extends React.Component {
         <div className={styles.gameControls}>
           <button onClick={this.handleRestart}> Restart </button>
           <button> <i className="fa fa-undo"/> </button>
-          <button> New Game </button>
+          <button onClick=""> New Game </button>
         </div>
       </div>
     );
+  }
+
+  emptyField(i) {
+    let set = new Set();
+    set.add(i);
+    const col = this.props.columns;
+    const len = this.props.rows * col;
+    const bombIndices = this.props.bombIndices;
+    const board = this.props.board;
+
+    let prevSize;
+    do {
+      prevSize = set.size;
+
+      set.forEach(index => {
+        let isLeftMargin = index % col !== 0;
+        let isRightMargin = (index+1) % col !== 0;
+
+        let left = isLeftMargin ? (index - 1) : -1;
+        let right = isRightMargin ? (index + 1) : 1000;
+        let top = index - col;
+        let bottom = index + col;
+
+        if (top >= 0 && !bombIndices.includes(top) && board[top].value === 0)
+          set.add(top);
+        if (left >= 0 && !bombIndices.includes(left) && board[left].value === 0)
+          set.add(left);
+        if (right < len && !bombIndices.includes(right) && board[right].value === 0)
+          set.add(right);
+        if (bottom < len && !bombIndices.includes(bottom) && board[bottom].value === 0)
+          set.add(bottom);
+      });
+    } while (set.size !== prevSize)
+
+    let border = new Set();
+    set.forEach(index => {
+      let isLeftMargin = index % col !== 0;
+      let isRightMargin = (index+1) % col !== 0;
+
+      let left = isLeftMargin ? (index - 1) : -1;
+      let right = isRightMargin ? (index + 1) : 1000;
+      let topLeft = isLeftMargin ? (index - col - 1) : -1;
+      let top = index - col;
+      let topRight = isRightMargin ? (index - col + 1) : -1;
+      let bottomLeft = isLeftMargin ? (index + col - 1) : 1000;
+      let bottom = index + col;
+      let bottomRight = isRightMargin ? (index + col + 1) : 1000;
+
+      if (topLeft >= 0 && !bombIndices.includes(topLeft) && board[topLeft].value !== 'b' && board[topLeft].value !== 0)
+        border.add(topLeft);
+      if (top >= 0 && !bombIndices.includes(top) && board[top].value !== 'b' && board[top].value !== 0)
+        border.add(top);
+      if (topRight >= 0 && !bombIndices.includes(topRight) && board[topRight].value !== 'b' && board[topRight].value !== 0)
+        border.add(topRight);
+      if (left >= 0 && !bombIndices.includes(left) && board[left].value !== 'b' && board[left].value !== 0)
+        border.add(left);
+      if (right < len && !bombIndices.includes(right) && board[right].value !== 'b' && board[right].value !== 0)
+        border.add(right);
+      if (bottomLeft < len && !bombIndices.includes(bottomLeft) && board[bottomLeft].value !== 'b' && board[bottomLeft].value !== 0)
+        border.add(bottomLeft);
+      if (bottom < len && !bombIndices.includes(bottom) && board[bottom].value !== 'b' && board[bottom].value !== 0)
+        border.add(bottom);
+      if (bottomRight < len && !bombIndices.includes(bottomRight) && board[bottomRight].value !== 'b' && board[bottomRight].value !== 0)
+        border.add(bottomRight);
+    });
+
+    let all = new Set([...set, ...border]);
+    all.forEach(cell => this.props.dispatch({type: "CLICK-CELL", index: cell}));
   }
 }
 
@@ -90,6 +158,7 @@ const mapStateToProps = (state) => ({
   rows: state.rows,
   columns: state.columns,
   bombs: state.bombs,
+  bombIndices: state.bombIndices,
   seconds: state.seconds,
   board: state.board,
   numRevealed: state.numRevealed
