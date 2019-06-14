@@ -14,20 +14,33 @@ class Game extends React.Component {
   }
 
   handleClick(i) {
-    if (this.props.board[i].revealed === true) return;
+    if (this.props.board[i].revealed || this.props.board[i].flagged) return;
     // Start the clock if first click
     if (this.props.seconds === 0)
       this.props.dispatch({type: "START-CLOCK"});
 
-    // Dispatch
+    // Click the cell if it hasn't been revealed
     if (!this.props.board[i].revealed && !this.props.board[i].flagged)
       this.props.dispatch({type: "CLICK-CELL", index: i});
+
+    // Check if bomb was clicked
+    if (this.props.board[i].value === 'b') {
+      alert('Uh oh, you clicked a bomb. Try a new game');
+    }
 
     // Check empty cells around
     if (this.props.board[i].value === 0)
       this.emptyField(i);
 
+
+    const total = this.props.rows * this.props.columns;
+    console.log(total);
     console.log(this.props.numRevealed);
+    console.log(this.props.numFlags);
+    console.log(this.props.bombs);
+    if (total <= this.props.numRevealed + this.props.bombs){
+      alert('u won')
+    }
   }
   handleFlag(i) {
     // Start the clock if first click
@@ -44,7 +57,6 @@ class Game extends React.Component {
 
   handleRestart() {
     this.props.dispatch({type: "RESTART-BOARD"});
-    setTimeout(() => console.log(this.props), 1000);
   }
   undo() {
 
@@ -161,7 +173,8 @@ const mapStateToProps = (state) => ({
   bombIndices: state.bombIndices,
   seconds: state.seconds,
   board: state.board,
-  numRevealed: state.numRevealed
+  numRevealed: state.numRevealed,
+  numFlags: state.numFlags
 });
 
 export default connect(mapStateToProps)(Game);
