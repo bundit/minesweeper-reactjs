@@ -8,8 +8,9 @@ function Square(props) {
     value = props.state.value ? props.state.value : null;
   }
   else if (props.state.flagged) {
-    value = <img src="/logo.svg" alt="flag"/>
+    value = <img className={styles.flag} src="/favicon.ico" alt="flag"/>
   }
+
   return (
     <button
       className={!props.state.revealed ? styles.square : styles.revealedSquare}
