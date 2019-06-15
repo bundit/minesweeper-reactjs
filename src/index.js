@@ -1,25 +1,36 @@
+// React Stuff
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+// Redux Stuff
 import { combineReducers, createStore } from "redux";
 import { Provider } from "react-redux";
 
+// App Stuff
+import './index.css';
+import App from './App';
+import {
+  EASY_ROWS, EASY_COLUMNS,
+  MEDIUM_ROWS, MEDIUM_COLUMNS,
+  HARD_ROWS, HARD_COLUMNS,
+  EASY_MINES, MEDIUM_MINES, HARD_MINES
+} from './constants/GameConstants';
+console.log(EASY_ROWS);
+console.log(EASY_COLUMNS);
 // Initial State of the app
 const initialState = {
-  rows: 10,
-  columns: 8,
+  rows: EASY_ROWS,
+  columns: EASY_COLUMNS,
   get board() {
     return new Array(this.rows*this.columns).fill(null);
   },
-  bombs: 10,
+  totalMines: EASY_MINES,
   bombIndices: [],
   seconds: 0,
   started: false,
   numRevealed: 0,
-  numFlagged: 0
+  numFlagsLeft: EASY_MINES
 }
 
 // Reducer methods
@@ -35,8 +46,8 @@ function reducer(state = initialState, action) {
     case "CONFIGURE-NEW-BOARD":
       // Copy board
       const newBoard = state.board.slice(0);
-      // Randomize bombs
-      let bombIndices = generateRandomBombs(row, col, state.bombs);
+      // Randomize Mines
+      let bombIndices = generateRandomMines(row, col, state.totalMines);
       // Create cells
       for (let i = 0; i < newBoard.length; i++) {
         let val = bombIndices.includes(i) ? 'b' : 0;
@@ -61,7 +72,7 @@ function reducer(state = initialState, action) {
         if (index+col+1 < len && (index+1) % col !== 0) newBoard[index+col+1].value++;
       });
 
-      // Set bombs
+      // Set Mines
       newBoard.forEach((cell, i) => {
         if (Number.isNaN(cell.value))
           cell.value = 'b';
@@ -74,7 +85,7 @@ function reducer(state = initialState, action) {
       };
 
     // Reveals a cell
-    case "CLICK-CELL":
+    case "REVEAL-CELL":
       const newClickedBoard = state.board.slice(0);
 
       newClickedBoard[index] = {
@@ -101,11 +112,10 @@ function reducer(state = initialState, action) {
       return !state.board[index].revealed ? {
         ...state,
         board: newFlaggedBoard,
-        bombs: --state.bombs,
-        numFlagged: ++state.numFlagged
+        numFlagsLeft: --state.numFlagsLeft
       } : state;
-    // Unflag a cell
 
+    // Unflag a cell
     case "UNFLAG-CELL":
       const newUnflaggedBoard = state.board.slice(0);
 
@@ -117,8 +127,7 @@ function reducer(state = initialState, action) {
       return state.board[index].flagged ? {
         ...state,
         board: newUnflaggedBoard,
-        bombs: ++state.bombs,
-        numFlagged: --state.numFlagged
+        numFlagsLeft: ++state.numFlagsLeft
       } : state;
 
     // Keeps track of time
@@ -147,11 +156,12 @@ function reducer(state = initialState, action) {
       });
       return {
         ...state,
-        bombs: 10,
+        totalMines: 10,
         board: restartBoard,
         seconds: 0,
         started: false,
-        numRevealed: 0
+        numRevealed: 0,
+        numFlagsLeft: 10
       }
 
     default:
@@ -161,8 +171,11 @@ function reducer(state = initialState, action) {
 
 // Create Redux store
 const store = createStore(reducer);
+
 store.dispatch({type: "CONFIGURE-NEW-BOARD"});
+
 setInterval(() => store.dispatch({type: "INCREMENT-TIME"}), 1000);
+
 ReactDOM.render(
   <Provider store={store}>
     <App />
@@ -174,10 +187,10 @@ ReactDOM.render(
 serviceWorker.unregister();
 
 
-function generateRandomBombs(rows, columns, bombs) {
+function generateRandomMines(rows, columns, totalMines) {
   let bombIndices = [];
   let length = rows*columns;
-  for (let i = 0; i < bombs; i++) {
+  for (let i = 0; i < totalMines; i++) {
     let index = Math.floor(Math.random() * (length-1));
     if (!bombIndices.includes(index)) {
       bombIndices.push(index);

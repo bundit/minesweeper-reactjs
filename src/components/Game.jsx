@@ -21,7 +21,7 @@ class Game extends React.Component {
 
     // Click the cell if it hasn't been revealed
     if (!this.props.board[i].revealed && !this.props.board[i].flagged)
-      this.props.dispatch({type: "CLICK-CELL", index: i});
+      this.props.dispatch({type: "REVEAL-CELL", index: i});
 
     // Check if bomb was clicked
     if (this.props.board[i].value === 'b') {
@@ -34,11 +34,7 @@ class Game extends React.Component {
 
 
     const total = this.props.rows * this.props.columns;
-    console.log(total);
-    console.log(this.props.numRevealed);
-    console.log(this.props.numFlags);
-    console.log(this.props.bombs);
-    if (total <= this.props.numRevealed + this.props.bombs){
+    if (total <= this.props.numRevealed + this.props.totalMines + 1){
       alert('u won')
     }
   }
@@ -47,7 +43,7 @@ class Game extends React.Component {
     if (this.props.seconds === 0)
       this.props.dispatch({type: "START-CLOCK"});
 
-    if (!this.props.board[i].flagged && this.props.bombs > 0) {
+    if (!this.props.board[i].flagged && this.props.totalMines > 0) {
       this.props.dispatch({type: "FLAG-CELL", index: i});
     }
     else if (this.props.board[i].flagged){
@@ -76,7 +72,7 @@ class Game extends React.Component {
     return (
       <div className={styles.container}>
         <div className={styles.gameHeader}>
-          <p><i className="fa fa-bomb"/>{this.props.bombs}</p>
+          <p><i className="fa fa-bomb"/>{this.props.numFlagsLeft}</p>
           <p><i className="fa fa-clock-o"/>{time}</p>
         </div>
         <div>
@@ -162,19 +158,19 @@ class Game extends React.Component {
     });
 
     let all = new Set([...set, ...border]);
-    all.forEach(cell => this.props.dispatch({type: "CLICK-CELL", index: cell}));
+    all.forEach(cell => this.props.dispatch({type: "REVEAL-CELL", index: cell}));
   }
 }
 
 const mapStateToProps = (state) => ({
   rows: state.rows,
   columns: state.columns,
-  bombs: state.bombs,
+  totalMines: state.totalMines,
   bombIndices: state.bombIndices,
   seconds: state.seconds,
   board: state.board,
   numRevealed: state.numRevealed,
-  numFlags: state.numFlags
+  numFlagsLeft: state.numFlagsLeft
 });
 
 export default connect(mapStateToProps)(Game);
