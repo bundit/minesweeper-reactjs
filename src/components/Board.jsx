@@ -1,37 +1,34 @@
 import React from 'react';
 import Square from './Square.jsx';
-import { connect } from 'react-redux';
-import uniqueId from 'react-html-id';
+import { CELL_SIZE } from '../constants/GameConstants';
 
-class Board extends React.Component {
-  constructor(props) {
-    super(props);
-    uniqueId.enableUniqueIds(this);
-  }
-
-  render() {
+function Board(props) {
     const squares = [];
-    let length = this.props.rows*this.props.columns;
+    let length = props.rows*props.columns;
 
+    // Create list of squares
     for (let i = 0; i < length; i++) {
-      squares.push(<Square
-                    key={i}
-                    index={i}
-                    handleClick={this.props.handleClick}
-                    handleFlag={this.props.handleFlag}
-                    state={this.props.board[i]}
-                    />
+      squares.push(
+        <Square
+          key={i}
+          index={i}
+          handleClick={props.handleClick}
+          handleFlag={props.handleFlag}
+          state={props.board[i]}
+        />
       );
     }
-    const width = this.props.columns * 25;
-    const height = this.props.rows * 25;
+
+    // Calculate size of board
+    const width = props.columns * CELL_SIZE;
+    const height = props.rows * CELL_SIZE;
     const boardStyle = {
       margin: 'auto',
       width: `${width}px`,
       height: `${height}px`,
       display: 'grid',
-      gridTemplateColumns: `repeat(${this.props.columns}, 1fr)`,
-      border: 'black 1px solid'
+      gridTemplateColumns: `repeat(${props.columns}, 1fr)`,
+      border: '#20232a 1px solid'
     }
 
     return (
@@ -39,7 +36,7 @@ class Board extends React.Component {
         {squares}
       </div>
     );
-  }
+
 }
 
 export default Board;

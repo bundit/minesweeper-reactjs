@@ -8,12 +8,22 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
 
+    // Click handlers
     this.handleClick = this.handleClick.bind(this);
     this.handleFlag = this.handleFlag.bind(this);
+
+    // Mode Handlers
+    this.handleEasyMode = this.handleEasyMode.bind(this);
+    this.handleMediumMode = this.handleMediumMode.bind(this);
+    this.handleHardMode = this.handleHardMode.bind(this);
+
+    // Game handlers
     this.handleRestart = this.handleRestart.bind(this);
     this.handleNewGame = this.handleNewGame.bind(this);
   }
 
+  // Handle a click on a cell to reveal a cell
+  // cellIndex - the index of the cell that was clicked
   handleClick(cellIndex) {
     const cellClicked = this.props.board[cellIndex];
 
@@ -37,16 +47,12 @@ class Game extends React.Component {
     if (cellClicked.value === 0)
       this.emptyField(cellIndex);
 
-
-    const total = this.props.rows * this.props.columns;
-    // Check win condition
-    if (total <= this.props.numRevealed + this.props.totalMines + 1){
-      alert('u won')
-    }
+    this.handleWinCondition();
   }
 
   // Flag the cell with index i if it has not been revealed
   // Unflag the cell if it is already flagged
+  // cellIndex - the index of the cell that was right clicked
   handleFlag(cellIndex) {
     const cellFlagged = this.props.board[cellIndex];
     // Start the clock if first click
@@ -65,8 +71,31 @@ class Game extends React.Component {
   handleRestart() {
     this.props.dispatch({type: "RESTART-BOARD"});
   }
+  // Create a whole new board
   handleNewGame() {
     this.props.dispatch({type: "CONFIGURE-NEW-BOARD"});
+  }
+  // Change the mode to easy if it isn't already
+  handleEasyMode() {
+    this.props.dispatch({type: "CHANGE-TO-EASY"});
+    this.props.dispatch({type: "CONFIGURE-NEW-BOARD"});
+  }
+  // Change the mode to mediium if it isn't already
+  handleMediumMode() {
+    this.props.dispatch({type: "CHANGE-TO-MEDIUM"});
+    this.props.dispatch({type: "CONFIGURE-NEW-BOARD"});
+  }
+  // Change the mode to hard if it isn't already
+  handleHardMode() {
+    this.props.dispatch({type: "CHANGE-TO-HARD"});
+    this.props.dispatch({type: "CONFIGURE-NEW-BOARD"});
+  }
+  handleWinCondition() {
+    const total = this.props.rows * this.props.columns;
+    // Check win condition
+    if (total <= this.props.numRevealed + this.props.totalMines + 1){
+      alert('u won')
+    }
   }
 
   // Render the component
@@ -79,7 +108,6 @@ class Game extends React.Component {
       timeDisplay = `0${seconds}`;
     else
       timeDisplay = seconds;
-
 
     return (
       <div className={styles.container}>
@@ -97,6 +125,20 @@ class Game extends React.Component {
           />
         </div>
         <div className={styles.gameControls}>
+          <button
+            onClick={this.handleEasyMode}
+            className={styles.easyButton}
+          > Easy </button>
+          <button
+            onClick={this.handleMediumMode}
+            className={styles.mediumButton}
+          > Medium </button>
+          <button
+            onClick={this.handleHardMode}
+            className={styles.hardButton}
+          > Hard </button>
+        </div>
+        <div className={styles.gameControls}>
           <button onClick={this.handleRestart}> Restart </button>
           <button onClick={this.handleNewGame}> New Game </button>
         </div>
@@ -104,15 +146,22 @@ class Game extends React.Component {
     );
   }
 
+  // Empty the field when a cell that has no mine neighbors is clicked
+  // Will reveal all adjacent empty cells and one layer beyond that
+  // i - the index of the cell that was clicked
   emptyField(i) {
     let emptySpaces = new Set();
     emptySpaces.add(i);
+
+    // Short name assignments
     const col = this.props.columns;
     const len = this.props.rows * col;
     const bombIndices = this.props.bombIndices;
     const board = this.props.board;
 
     let prevSize;
+
+    // Keep adding the adjacent cells that are empty
     do {
       prevSize = emptySpaces.size;
 
@@ -136,6 +185,7 @@ class Game extends React.Component {
       });
     } while (emptySpaces.size !== prevSize)
 
+    // Add the bordering cells that are not empty
     let border = new Set();
     emptySpaces.forEach(index => {
       let isLeftMargin = index % col !== 0;
@@ -170,6 +220,8 @@ class Game extends React.Component {
 
     let all = new Set([...emptySpaces, ...border]);
     all.forEach(cell => this.props.dispatch({type: "REVEAL-CELL", index: cell}));
+
+    this.handleWinCondition();
   }
 }
 

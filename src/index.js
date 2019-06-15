@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 
 // Redux Stuff
-import { combineReducers, createStore } from "redux";
+import { createStore } from "redux";
 import { Provider } from "react-redux";
 
 // App Stuff
@@ -43,7 +43,7 @@ function reducer(state = initialState, action) {
   switch(action.type) {
     // Make a new board
     case "CONFIGURE-NEW-BOARD":
-      const newBoard = state.board.slice(0);
+      const newBoard = Array(col * row);
 
       // Randomize Mines
       let bombIndices = generateRandomMines(row, col, state.totalMines);
@@ -110,13 +110,14 @@ function reducer(state = initialState, action) {
     case "FLAG-CELL":
       const newFlaggedBoard = state.board.slice(0);
       const cellIsRevealed = state.board[index].isRevealed;
+      const numFlagsLeft = state.numFlagsLeft;
 
       newFlaggedBoard[index] = {
         ...state.board[index],
         isFlagged: true
       }
 
-      return !cellIsRevealed ? {
+      return !cellIsRevealed && numFlagsLeft > 0 ? {
         ...state,
         board: newFlaggedBoard,
         numFlagsLeft: --state.numFlagsLeft
@@ -173,6 +174,32 @@ function reducer(state = initialState, action) {
         numRevealed: 0,
         numFlagsLeft: state.totalMines
       }
+
+    case "CHANGE-TO-EASY":
+      return {
+        ...state,
+        rows: EASY_ROWS,
+        columns: EASY_COLUMNS,
+        totalMines: EASY_MINES,
+        numFlagsLeft: EASY_MINES
+      }
+    case "CHANGE-TO-MEDIUM":
+      return {
+        ...state,
+        rows: MEDIUM_ROWS,
+        columns: MEDIUM_COLUMNS,
+        board: [],
+        totalMines: MEDIUM_MINES,
+        numFlagsLeft: MEDIUM_MINES
+      }
+    case "CHANGE-TO-HARD":
+        return {
+          ...state,
+          rows: HARD_ROWS,
+          columns: HARD_COLUMNS,
+          totalMines: HARD_MINES,
+          numFlagsLeft: HARD_MINES
+        }
 
     default:
       return state;
