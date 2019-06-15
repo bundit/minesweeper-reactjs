@@ -23,13 +23,14 @@ class Board extends React.Component {
                     />
       );
     }
-
+    const width = this.props.columns * 25;
+    const height = this.props.rows * 25;
     const boardStyle = {
       margin: 'auto',
-      width: '200px',
-      height: '250px',
+      width: `${width}px`,
+      height: `${height}px`,
       display: 'grid',
-      gridTemplateColumns: 'repeat(8, 1fr)',
+      gridTemplateColumns: `repeat(${this.props.columns}, 1fr)`,
       border: 'black 1px solid'
     }
 
