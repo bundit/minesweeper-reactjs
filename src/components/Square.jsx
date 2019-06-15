@@ -4,20 +4,22 @@ import styles from '../css-modules/Square.module.css'
 
 function Square(props) {
   let value;
-  if (props.state.revealed && !props.state.flagged) {
-    value = props.state.value ? props.state.value : null;
+  const thisSquare = props.state;
+
+  if (thisSquare.isRevealed) {
+    value = thisSquare.value ? thisSquare.value : null;
   }
-  else if (props.state.flagged) {
+  else if (thisSquare.isFlagged) {
     value = <img className={styles.flag} src="/favicon.ico" alt="flag"/>
   }
 
   return (
     <button
-      className={!props.state.revealed ? styles.square : styles.revealedSquare}
+      className={!thisSquare.isRevealed ? styles.square : styles.revealedSquare}
       onClick={() => props.handleClick(props.index)}
       onContextMenu={e => { e.preventDefault(); props.handleFlag(props.index);}}
     >
-      {value}
+      {value === 'b' ? <i className="fa fa-bomb"/> : value}
     </button>
   );
 }

@@ -9,48 +9,57 @@ class Game extends React.Component {
     super(props);
 
     this.handleClick = this.handleClick.bind(this);
-    this.handleRestart = this.handleRestart.bind(this);
     this.handleFlag = this.handleFlag.bind(this);
+    this.handleRestart = this.handleRestart.bind(this);
+    
   }
 
-  handleClick(i) {
-    if (this.props.board[i].revealed || this.props.board[i].flagged) return;
+  handleClick(cellIndex) {
+    const cellClicked = this.props.board[cellIndex];
+
+    if (cellClicked.isRevealed || cellClicked.isFlagged) return;
+
     // Start the clock if first click
     if (this.props.seconds === 0)
       this.props.dispatch({type: "START-CLOCK"});
 
     // Click the cell if it hasn't been revealed
-    if (!this.props.board[i].revealed && !this.props.board[i].flagged)
-      this.props.dispatch({type: "REVEAL-CELL", index: i});
+    if (!cellClicked.isRevealed && !cellClicked.isFlagged)
+      this.props.dispatch({type: "REVEAL-CELL", index: cellIndex});
 
     // Check if bomb was clicked
-    if (this.props.board[i].value === 'b') {
+    if (cellClicked.value === 'b') {
       alert('Uh oh, you clicked a bomb. Try a new game');
     }
 
     // Check empty cells around
-    if (this.props.board[i].value === 0)
-      this.emptyField(i);
+    if (cellClicked.value === 0)
+      this.emptyField(cellIndex);
 
 
     const total = this.props.rows * this.props.columns;
+    // Check win condition
     if (total <= this.props.numRevealed + this.props.totalMines + 1){
       alert('u won')
     }
   }
-  handleFlag(i) {
+  // Flag the cell with index i if it has not been revealed
+  // Unflag the cell if it is already flagged
+  handleFlag(cellIndex) {
+    const cellFlagged = this.props.board[cellIndex];
     // Start the clock if first click
     if (this.props.seconds === 0)
       this.props.dispatch({type: "START-CLOCK"});
 
-    if (!this.props.board[i].flagged && this.props.totalMines > 0) {
-      this.props.dispatch({type: "FLAG-CELL", index: i});
+    if (!cellFlagged.isFlagged && this.props.totalMines > 0) {
+      this.props.dispatch({type: "FLAG-CELL", index: cellIndex});
     }
-    else if (this.props.board[i].flagged){
-      this.props.dispatch({type: "UNFLAG-CELL", index: i});
+    else if (cellFlagged.isFlagged){
+      this.props.dispatch({type: "UNFLAG-CELL", index: cellIndex});
     }
   }
 
+  // Clear the board
   handleRestart() {
     this.props.dispatch({type: "RESTART-BOARD"});
   }
@@ -94,8 +103,8 @@ class Game extends React.Component {
   }
 
   emptyField(i) {
-    let set = new Set();
-    set.add(i);
+    let emptySpaces = new Set();
+    emptySpaces.add(i);
     const col = this.props.columns;
     const len = this.props.rows * col;
     const bombIndices = this.props.bombIndices;
@@ -103,9 +112,9 @@ class Game extends React.Component {
 
     let prevSize;
     do {
-      prevSize = set.size;
+      prevSize = emptySpaces.size;
 
-      set.forEach(index => {
+      emptySpaces.forEach(index => {
         let isLeftMargin = index % col !== 0;
         let isRightMargin = (index+1) % col !== 0;
 
@@ -115,18 +124,18 @@ class Game extends React.Component {
         let bottom = index + col;
 
         if (top >= 0 && !bombIndices.includes(top) && board[top].value === 0)
-          set.add(top);
+          emptySpaces.add(top);
         if (left >= 0 && !bombIndices.includes(left) && board[left].value === 0)
-          set.add(left);
+          emptySpaces.add(left);
         if (right < len && !bombIndices.includes(right) && board[right].value === 0)
-          set.add(right);
+          emptySpaces.add(right);
         if (bottom < len && !bombIndices.includes(bottom) && board[bottom].value === 0)
-          set.add(bottom);
+          emptySpaces.add(bottom);
       });
-    } while (set.size !== prevSize)
+    } while (emptySpaces.size !== prevSize)
 
     let border = new Set();
-    set.forEach(index => {
+    emptySpaces.forEach(index => {
       let isLeftMargin = index % col !== 0;
       let isRightMargin = (index+1) % col !== 0;
 
@@ -157,7 +166,7 @@ class Game extends React.Component {
         border.add(bottomRight);
     });
 
-    let all = new Set([...set, ...border]);
+    let all = new Set([...emptySpaces, ...border]);
     all.forEach(cell => this.props.dispatch({type: "REVEAL-CELL", index: cell}));
   }
 }
@@ -165,10 +174,10 @@ class Game extends React.Component {
 const mapStateToProps = (state) => ({
   rows: state.rows,
   columns: state.columns,
+  board: state.board,
   totalMines: state.totalMines,
   bombIndices: state.bombIndices,
   seconds: state.seconds,
-  board: state.board,
   numRevealed: state.numRevealed,
   numFlagsLeft: state.numFlagsLeft
 });

@@ -16,8 +16,7 @@ import {
   HARD_ROWS, HARD_COLUMNS,
   EASY_MINES, MEDIUM_MINES, HARD_MINES
 } from './constants/GameConstants';
-console.log(EASY_ROWS);
-console.log(EASY_COLUMNS);
+
 // Initial State of the app
 const initialState = {
   rows: EASY_ROWS,
@@ -44,18 +43,19 @@ function reducer(state = initialState, action) {
   switch(action.type) {
     // Make a new board
     case "CONFIGURE-NEW-BOARD":
-      // Copy board
       const newBoard = state.board.slice(0);
+
       // Randomize Mines
       let bombIndices = generateRandomMines(row, col, state.totalMines);
+
       // Create cells
       for (let i = 0; i < newBoard.length; i++) {
         let val = bombIndices.includes(i) ? 'b' : 0;
         let cell = {
           index: i,
-          revealed: false,
+          isRevealed: false,
           value: val,
-          flagged: false
+          isFlagged: false
         };
         newBoard[i] = cell;
       }
@@ -87,14 +87,14 @@ function reducer(state = initialState, action) {
     // Reveals a cell
     case "REVEAL-CELL":
       const newClickedBoard = state.board.slice(0);
+      const currIsRevealed = state.board[index].isRevealed;
 
       newClickedBoard[index] = {
         ...state.board[index],
-        revealed: true,
+        isRevealed: true,
       }
 
-      const revealed = state.board[index].revealed
-      return !revealed ? {
+      return !currIsRevealed ? {
         ...state,
         board: newClickedBoard,
         numRevealed: ++numRevealed
@@ -103,13 +103,14 @@ function reducer(state = initialState, action) {
     // Flag a cell
     case "FLAG-CELL":
       const newFlaggedBoard = state.board.slice(0);
+      const cellIsRevealed = state.board[index].isRevealed;
 
       newFlaggedBoard[index] = {
         ...state.board[index],
-        flagged: true
+        isFlagged: true
       }
 
-      return !state.board[index].revealed ? {
+      return !cellIsRevealed ? {
         ...state,
         board: newFlaggedBoard,
         numFlagsLeft: --state.numFlagsLeft
@@ -118,13 +119,14 @@ function reducer(state = initialState, action) {
     // Unflag a cell
     case "UNFLAG-CELL":
       const newUnflaggedBoard = state.board.slice(0);
+      const cellIsFlagged = state.board[index].isFlagged;
 
       newUnflaggedBoard[index] = {
         ...state.board[index],
-        flagged: false
+        isFlagged: false
       }
 
-      return state.board[index].flagged ? {
+      return cellIsFlagged ? {
         ...state,
         board: newUnflaggedBoard,
         numFlagsLeft: ++state.numFlagsLeft
@@ -132,10 +134,12 @@ function reducer(state = initialState, action) {
 
     // Keeps track of time
     case "INCREMENT-TIME":
-      let time = state.seconds;
-      return state.started ? {
+      let seconds = state.seconds;
+      const gameHasStarted = state.started;
+
+      return gameHasStarted ? {
         ...state,
-        seconds: ++time
+        seconds: ++seconds
       } : state;
 
     // Starts the clock
@@ -147,21 +151,21 @@ function reducer(state = initialState, action) {
 
     // Restart board with the same cells
     case "RESTART-BOARD":
-      const restartBoard = state.board.map(cell => {
+      const clearedBoard = state.board.map(cell => {
         return {
           ...cell,
-          revealed: false,
-          flagged: false
+          isRevealed: false,
+          isFlagged: false
         };
       });
       return {
         ...state,
-        totalMines: 10,
-        board: restartBoard,
+        totalMines: state.totalMines,
+        board: clearedBoard,
         seconds: 0,
         started: false,
         numRevealed: 0,
-        numFlagsLeft: 10
+        numFlagsLeft: state.totalMines
       }
 
     default:
@@ -172,10 +176,13 @@ function reducer(state = initialState, action) {
 // Create Redux store
 const store = createStore(reducer);
 
+// Initialize game board
 store.dispatch({type: "CONFIGURE-NEW-BOARD"});
 
+// Set the timer
 setInterval(() => store.dispatch({type: "INCREMENT-TIME"}), 1000);
 
+// Render
 ReactDOM.render(
   <Provider store={store}>
     <App />
