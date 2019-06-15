@@ -1,0 +1,17 @@
+.footerWrapper {
+  position: absolute;
+  bottom: 0;
+  background-color: #20232a;
+  width: 100%;
+  font-size: 12px;
+}
+.footer {
+  text-align: center;
+}
+.footer p {
+  color: #61dafb;
+}
+.footer a {
+  color: #fff;
+  text-decoration: none;
+}
