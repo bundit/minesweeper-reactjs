@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import styles from '../css-modules/Header.module.css';
 import logo from '../logo.svg';
 
@@ -15,4 +14,4 @@ function Header() {
   );
 }
 
-export default connect()(Header);
+export default Header;
