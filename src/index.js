@@ -78,10 +78,16 @@ function reducer(state = initialState, action) {
           cell.value = 'b';
       });
 
+      // numRevealed: 0,
+      // numFlagsLeft: EA
       return {
         ...state,
         bombIndices: bombIndices,
-        board: newBoard
+        board: newBoard,
+        seconds: 0,
+        started: false,
+        numRevealed: 0,
+        numFlagsLeft: state.totalMines
       };
 
     // Reveals a cell

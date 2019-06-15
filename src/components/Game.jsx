@@ -11,12 +11,13 @@ class Game extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.handleFlag = this.handleFlag.bind(this);
     this.handleRestart = this.handleRestart.bind(this);
-    
+    this.handleNewGame = this.handleNewGame.bind(this);
   }
 
   handleClick(cellIndex) {
     const cellClicked = this.props.board[cellIndex];
 
+    // Do nothing
     if (cellClicked.isRevealed || cellClicked.isFlagged) return;
 
     // Start the clock if first click
@@ -43,6 +44,7 @@ class Game extends React.Component {
       alert('u won')
     }
   }
+
   // Flag the cell with index i if it has not been revealed
   // Unflag the cell if it is already flagged
   handleFlag(cellIndex) {
@@ -63,26 +65,27 @@ class Game extends React.Component {
   handleRestart() {
     this.props.dispatch({type: "RESTART-BOARD"});
   }
-  undo() {
-
+  handleNewGame() {
+    this.props.dispatch({type: "CONFIGURE-NEW-BOARD"});
   }
 
+  // Render the component
   render() {
-    let time;
+    let timeDisplay;
     const seconds = this.props.seconds;
     if (seconds < 10)
-      time = `00${seconds}`;
+      timeDisplay = `00${seconds}`;
     else if (seconds < 100)
-      time = `0${seconds}`;
+      timeDisplay = `0${seconds}`;
     else
-      time = seconds;
+      timeDisplay = seconds;
 
 
     return (
       <div className={styles.container}>
         <div className={styles.gameHeader}>
           <p><i className="fa fa-bomb"/>{this.props.numFlagsLeft}</p>
-          <p><i className="fa fa-clock-o"/>{time}</p>
+          <p><i className="fa fa-clock-o"/>{timeDisplay}</p>
         </div>
         <div>
           <Board
@@ -95,8 +98,7 @@ class Game extends React.Component {
         </div>
         <div className={styles.gameControls}>
           <button onClick={this.handleRestart}> Restart </button>
-          <button> <i className="fa fa-undo"/> </button>
-          <button onClick=""> New Game </button>
+          <button onClick={this.handleNewGame}> New Game </button>
         </div>
       </div>
     );
