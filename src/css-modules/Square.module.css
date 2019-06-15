@@ -1,22 +1,32 @@
-.square {
+.oddSquare {
   width: 25px;;
   height: 25px;
-  border: 1px grey solid;
+  border: 0;
   margin: 0 auto;
-  background-color: #CCC;
-  overflow: hidden;
   padding: 0;
-  box-sizing: border-box;
   align-items: stretch;
+  box-sizing: border-box;
+  background-color: #64e0ff;
+}
+.evenSquare {
+  width: 25px;;
+  height: 25px;
+  border: 0;
+  margin: 0 auto;
+  padding: 0;
+  align-items: stretch;
+  box-sizing: border-box;
+  background-color: #a19e9b;
 }
 .revealedSquare {
   width: 25px;;
   height: 25px;
-  border: 1px grey solid;
+  border: 0.5px grey solid;
   margin: 0 auto;
   padding: 0;
   box-sizing: border-box;
   align-items: stretch;
+  background-color: #FFF;
 }
 .flag {
   width: 25px;
