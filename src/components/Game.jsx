@@ -20,6 +20,9 @@ class Game extends React.Component {
     // Game handlers
     this.handleRestart = this.handleRestart.bind(this);
     this.handleNewGame = this.handleNewGame.bind(this);
+
+    this.handleShowCharts = this.handleShowCharts.bind(this);
+    this.handleShowGame = this.handleShowGame.bind(this);
   }
 
   // Check win condition after every change
@@ -114,6 +117,14 @@ class Game extends React.Component {
   handleWinCondition() {
     alert('u won');
   }
+  handleShowGame() {
+    if (!this.props.showGame)
+      this.props.dispatch({type: "TOGGLE-SHOW-GAME"});
+  }
+  handleShowCharts() {
+    if (this.props.showGame)
+      this.props.dispatch({type: "TOGGLE-SHOW-GAME"});
+  }
 
   // Render the component
   render() {
@@ -129,8 +140,8 @@ class Game extends React.Component {
     return (
       <div className={styles.container}>
         <div className={styles.gameNavWrapper}>
-          <button className={this.props.showGame && styles.active}>Minesweeper</button>
-          <button className={!this.props.showGame && styles.active}>High Scores</button>
+          <button onClick={this.handleShowGame} className={this.props.showGame && styles.active}>Minesweeper</button>
+          <button onClick={this.handleShowCharts} className={!this.props.showGame && styles.active}>High Scores</button>
         </div>
         <div className={styles.gameWrapper} style={{display: !this.props.showGame && 'none'}}>
           <div className={styles.gameHeader}>

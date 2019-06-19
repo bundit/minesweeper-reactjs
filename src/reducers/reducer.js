@@ -54,11 +54,13 @@ export default function reducer(state = initialState, action) {
     // Change to hard mode
     case "CHANGE-TO-HARD":
         return changeToHard(state, action);
+    // Toggle show game / show high scores
+    case "TOGGLE-SHOW-GAME":
+        return toggleShowGame(state, action);
     default:
       return state;
   }
 }
-
 
 // Configure a new board
 function configureNewBoard(state, action) {
@@ -219,17 +221,22 @@ function changeToMedium(state, action) {
     ...state,
     rows: MEDIUM_ROWS,
     columns: MEDIUM_COLUMNS,
-    // board: [],
     totalMines: MEDIUM_MINES,
     numFlagsLeft: MEDIUM_MINES
   }
 }
 function changeToHard(state, action) {
-    return {
-      ...state,
-      rows: HARD_ROWS,
-      columns: HARD_COLUMNS,
-      totalMines: HARD_MINES,
-      numFlagsLeft: HARD_MINES
-    }
+  return {
+    ...state,
+    rows: HARD_ROWS,
+    columns: HARD_COLUMNS,
+    totalMines: HARD_MINES,
+    numFlagsLeft: HARD_MINES
+  }
+}
+function toggleShowGame(state, action) {
+  return {
+    ...state,
+    showGame: !state.showGame
+  }
 }
