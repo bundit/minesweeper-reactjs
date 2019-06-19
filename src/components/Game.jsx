@@ -1,6 +1,6 @@
 import React from 'react';
 import Board from './Board.jsx';
-// import GameControls from './GameControls.jsx';
+import HighScoreChart from './HighScoreChart.jsx';
 import { connect } from 'react-redux';
 import styles from '../css-modules/Game.module.css';
 
@@ -128,11 +128,11 @@ class Game extends React.Component {
 
     return (
       <div className={styles.container}>
-        <div className={styles.gameWrapper}>
-          <div className={styles.gameNavWrapper}>
-            <button className={this.props.showGame && styles.active}>Minesweeper</button>
-            <button className={!this.props.showGame && styles.active}>High Scores</button>
-          </div>
+        <div className={styles.gameNavWrapper}>
+          <button className={this.props.showGame && styles.active}>Minesweeper</button>
+          <button className={!this.props.showGame && styles.active}>High Scores</button>
+        </div>
+        <div className={styles.gameWrapper} style={{display: !this.props.showGame && 'none'}}>
           <div className={styles.gameHeader}>
             <p><i className="fa fa-bomb"/>{this.props.numFlagsLeft}</p>
             <p><i className="fa fa-clock-o"/>{timeDisplay}</p>
@@ -165,6 +165,7 @@ class Game extends React.Component {
             <button onClick={this.handleNewGame}> New Game </button>
           </div>
         </div>
+        <HighScoreChart showGame={this.props.showGame}/>
       </div>
     );
   }

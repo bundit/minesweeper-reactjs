@@ -10,6 +10,8 @@
   display: inline-block;
 }
 .gameNavWrapper {
+  width: 300px;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
   background-color: white;
