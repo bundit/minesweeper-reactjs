@@ -22,6 +22,16 @@ class Game extends React.Component {
     this.handleNewGame = this.handleNewGame.bind(this);
   }
 
+  // Check win condition after every change
+  componentDidUpdate(prevProps) {
+
+    if (prevProps.numRevealed !== this.props.numRevealed) {
+
+      if (this.checkWinCondition())
+        this.handleWinCondition();
+    }
+  }
+
   // Handle a click on a cell to reveal a cell
   // cellIndex - the index of the cell that was clicked
   handleClick(cellIndex) {
@@ -46,8 +56,6 @@ class Game extends React.Component {
     // Check empty cells around
     if (cellClicked.value === 0)
       this.emptyField(cellIndex);
-
-    this.handleWinCondition();
   }
 
   // Flag the cell with index i if it has not been revealed
@@ -90,12 +98,15 @@ class Game extends React.Component {
     this.props.dispatch({type: "CHANGE-TO-HARD"});
     this.props.dispatch({type: "CONFIGURE-NEW-BOARD"});
   }
-  handleWinCondition() {
+  // Check if the win condition has been met
+  checkWinCondition() {
     const total = this.props.rows * this.props.columns;
-    // Check win condition
-    if (total <= this.props.numRevealed + this.props.totalMines + 1){
-      alert('u won')
-    }
+    return (total <= this.props.numRevealed + this.props.totalMines)
+  }
+  // Do something when win condition is met
+  // Call to action if so
+  handleWinCondition() {
+    alert('u won');
   }
 
   // Render the component
@@ -220,8 +231,6 @@ class Game extends React.Component {
 
     let all = new Set([...emptySpaces, ...border]);
     all.forEach(cell => this.props.dispatch({type: "REVEAL-CELL", index: cell}));
-
-    this.handleWinCondition();
   }
 }
 
