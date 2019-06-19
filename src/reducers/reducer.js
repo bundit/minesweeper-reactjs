@@ -16,12 +16,13 @@ const initialState = {
   started: false,
   seconds: 0,
   numRevealed: 0,
-  numFlagsLeft: EASY_MINES
+  numFlagsLeft: EASY_MINES,
+  showGame: true
 }
 
 // Reducer methods
 export default function reducer(state = initialState, action) {
-  
+
   switch(action.type) {
     // Make a new board
     case "CONFIGURE-NEW-BOARD":
@@ -44,16 +45,20 @@ export default function reducer(state = initialState, action) {
     // Restart board with the same cells
     case "RESTART-BOARD":
       return restartBoard(state, action);
+    // Change to easy mode
     case "CHANGE-TO-EASY":
       return changeToEasy(state, action);
+    // Change to medium mode
     case "CHANGE-TO-MEDIUM":
       return changeToMedium(state, action);
+    // Change to hard mode
     case "CHANGE-TO-HARD":
         return changeToHard(state, action);
     default:
       return state;
   }
 }
+
 
 // Configure a new board
 function configureNewBoard(state, action) {

@@ -128,36 +128,42 @@ class Game extends React.Component {
 
     return (
       <div className={styles.container}>
-        <div className={styles.gameHeader}>
-          <p><i className="fa fa-bomb"/>{this.props.numFlagsLeft}</p>
-          <p><i className="fa fa-clock-o"/>{timeDisplay}</p>
-        </div>
-        <div>
-          <Board
-            rows={this.props.rows}
-            columns={this.props.columns}
-            board={this.props.board}
-            handleClick={this.handleClick}
-            handleFlag={this.handleFlag}
-          />
-        </div>
-        <div className={styles.gameControls}>
-          <button
-            onClick={this.handleEasyMode}
-            className={styles.easyButton}
-          > Easy </button>
-          <button
-            onClick={this.handleMediumMode}
-            className={styles.mediumButton}
-          > Medium </button>
-          <button
-            onClick={this.handleHardMode}
-            className={styles.hardButton}
-          > Hard </button>
-        </div>
-        <div className={styles.gameControls}>
-          <button onClick={this.handleRestart}> Restart </button>
-          <button onClick={this.handleNewGame}> New Game </button>
+        <div className={styles.gameWrapper}>
+          <div className={styles.gameNavWrapper}>
+            <button className={this.props.showGame && styles.active}>Minesweeper</button>
+            <button className={!this.props.showGame && styles.active}>High Scores</button>
+          </div>
+          <div className={styles.gameHeader}>
+            <p><i className="fa fa-bomb"/>{this.props.numFlagsLeft}</p>
+            <p><i className="fa fa-clock-o"/>{timeDisplay}</p>
+          </div>
+          <div>
+            <Board
+              rows={this.props.rows}
+              columns={this.props.columns}
+              board={this.props.board}
+              handleClick={this.handleClick}
+              handleFlag={this.handleFlag}
+            />
+          </div>
+          <div className={styles.gameControls}>
+            <button
+              onClick={this.handleEasyMode}
+              className={styles.easyButton}
+            > Easy </button>
+            <button
+              onClick={this.handleMediumMode}
+              className={styles.mediumButton}
+            > Medium </button>
+            <button
+              onClick={this.handleHardMode}
+              className={styles.hardButton}
+            > Hard </button>
+          </div>
+          <div className={styles.gameControls}>
+            <button onClick={this.handleRestart}> Restart </button>
+            <button onClick={this.handleNewGame}> New Game </button>
+          </div>
         </div>
       </div>
     );
@@ -248,7 +254,8 @@ const mapStateToProps = (state) => ({
   bombIndices: state.bombIndices,
   seconds: state.seconds,
   numRevealed: state.numRevealed,
-  numFlagsLeft: state.numFlagsLeft
+  numFlagsLeft: state.numFlagsLeft,
+  showGame: state.showGame
 });
 
 export default connect(mapStateToProps)(Game);

@@ -1,9 +1,30 @@
 .container {
-  padding-top: 20vmin;
-  padding-bottom: 10vh;
+  padding-top: 30vmin;
+  padding-bottom: 15vh;
+  text-align: center;
 }
 .gameHeader {
   text-align: center;
+}
+.gameWrapper {
+  display: inline-block;
+}
+.gameNavWrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-color: white;
+}
+.gameNavWrapper button {
+  margin: 0;
+  color: #a19e9b;
+  border: 1px black solid;
+}
+.gameNavWrapper button:last-child {
+  border-left: none;
+}
+.active {
+  color: black !important;
+  background-color: #64e0ff;
 }
 p {
   padding: 0 10px;

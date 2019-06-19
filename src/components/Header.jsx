@@ -9,7 +9,6 @@ function Header() {
         <img src={logo} className={styles.logo} alt="logo" />
         <h1>React Minesweeper</h1>
       </div>
-      <div/>
     </div>
   );
 }
