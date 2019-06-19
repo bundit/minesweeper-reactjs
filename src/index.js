@@ -16,6 +16,7 @@ import {
   HARD_ROWS, HARD_COLUMNS,
   EASY_MINES, MEDIUM_MINES, HARD_MINES
 } from './constants/GameConstants';
+import { generateRandomMines } from './helpers/helpers'
 
 // Initial State of the app
 const initialState = {
@@ -225,19 +226,3 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
-
-
-function generateRandomMines(rows, columns, totalMines) {
-  let bombIndices = [];
-  let length = rows*columns;
-  for (let i = 0; i < totalMines; i++) {
-    let index = Math.floor(Math.random() * (length-1));
-    if (!bombIndices.includes(index)) {
-      bombIndices.push(index);
-    }
-    else {
-      i--;
-    }
-  }
-  return bombIndices;
-}
