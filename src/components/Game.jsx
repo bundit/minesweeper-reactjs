@@ -25,11 +25,17 @@ class Game extends React.Component {
   // Check win condition after every change
   componentDidUpdate(prevProps) {
 
-    if (prevProps.numRevealed !== this.props.numRevealed) {
-
+    if (prevProps.numRevealed !== this.props.numRevealed)
       if (this.checkWinCondition())
         this.handleWinCondition();
-    }
+  }
+  // Initialize game when Game is mounted
+  componentDidMount() {
+    // Initialize game board
+    this.props.dispatch({type: "CONFIGURE-NEW-BOARD"});
+
+    // Set the timer
+    setInterval(() => this.props.dispatch({type: "INCREMENT-TIME"}), 1000);
   }
 
   // Handle a click on a cell to reveal a cell
@@ -53,7 +59,7 @@ class Game extends React.Component {
       alert('Uh oh, you clicked a bomb. Try a new game');
     }
 
-    // Check empty cells around
+    // Clicked empty cell
     if (cellClicked.value === 0)
       this.emptyField(cellIndex);
   }

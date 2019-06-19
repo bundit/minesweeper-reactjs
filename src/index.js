@@ -15,12 +15,6 @@ import App from './App';
 // Create Redux store
 const store = createStore(reducer);
 
-// Initialize game board
-store.dispatch({type: "CONFIGURE-NEW-BOARD"});
-
-// Set the timer
-setInterval(() => store.dispatch({type: "INCREMENT-TIME"}), 1000);
-
 // Render
 ReactDOM.render(
   <Provider store={store}>
