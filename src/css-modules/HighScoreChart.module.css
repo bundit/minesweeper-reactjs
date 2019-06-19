@@ -1,0 +1,19 @@
+.chartWrapper {
+  padding-top: 10px;
+}
+.chart {
+  display: inline-block;
+  border: black 1px solid;
+  width: 250px;
+  margin-bottom: 5px;
+  background-color: white;
+  filter: drop-shadow(1px 1px 1px #000);
+}
+.chart ol {
+  padding: 0;
+}
+.chart li {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  font-size: 12px;
+}
