@@ -28,7 +28,7 @@ class Game extends React.Component {
   // Check win condition after every change
   componentDidUpdate(prevProps) {
 
-    if (prevProps.numRevealed !== this.props.numRevealed)
+    if (prevProps.game.numRevealed !== this.props.game.numRevealed)
       if (this.checkWinCondition())
         this.handleWinCondition();
   }
@@ -48,13 +48,13 @@ class Game extends React.Component {
   // Handle a click on a cell to reveal a cell
   // cellIndex - the index of the cell that was clicked
   handleClick(cellIndex) {
-    const cellClicked = this.props.board[cellIndex];
+    const cellClicked = this.props.game.board[cellIndex];
 
     // Do nothing
     if (cellClicked.isRevealed || cellClicked.isFlagged) return;
 
     // Start the clock if first click
-    if (this.props.seconds === 0)
+    if (!this.props.timer.hasStarted)
       this.props.dispatch({type: "START-CLOCK"});
 
     // Click the cell if it hasn't been revealed
@@ -75,12 +75,13 @@ class Game extends React.Component {
   // Unflag the cell if it is already flagged
   // cellIndex - the index of the cell that was right clicked
   handleFlag(cellIndex) {
-    const cellFlagged = this.props.board[cellIndex];
+    const cellFlagged = this.props.game.board[cellIndex];
+    const totalMines = this.props.gameDimensions.totalMines;
     // Start the clock if first click
-    if (this.props.seconds === 0)
+    if (!this.props.timer.hasStarted)
       this.props.dispatch({type: "START-CLOCK"});
 
-    if (!cellFlagged.isFlagged && this.props.totalMines > 0) {
+    if (!cellFlagged.isFlagged && totalMines > 0) {
       this.props.dispatch({type: "FLAG-CELL", index: cellIndex});
     }
     else if (cellFlagged.isFlagged){
@@ -113,8 +114,10 @@ class Game extends React.Component {
   }
   // Check if the win condition has been met
   checkWinCondition() {
-    const total = this.props.rows * this.props.columns;
-    return (total <= this.props.numRevealed + this.props.totalMines)
+    const total = this.props.gameDimensions.rows * this.props.gameDimensions.columns;
+    const totalMines = this.props.gameDimensions.totalMines;
+
+    return (total <= this.props.game.numRevealed + totalMines)
   }
   // Do something when win condition is met
   // Call to action if so
@@ -122,18 +125,18 @@ class Game extends React.Component {
     alert('u won');
   }
   handleShowGame() {
-    if (!this.props.showGame)
+    if (!this.props.game.showGame)
       this.props.dispatch({type: "TOGGLE-SHOW-GAME"});
   }
   handleShowCharts() {
-    if (this.props.showGame)
+    if (this.props.game.showGame)
       this.props.dispatch({type: "TOGGLE-SHOW-GAME"});
   }
 
   // Render the component
   render() {
     let timeDisplay;
-    const seconds = this.props.seconds;
+    const seconds = this.props.timer.seconds;
     if (seconds < 10)
       timeDisplay = `00${seconds}`;
     else if (seconds < 100)
@@ -144,19 +147,19 @@ class Game extends React.Component {
     return (
       <div className={styles.container}>
         <div className={styles.gameNavWrapper}>
-          <button onClick={this.handleShowGame} className={this.props.showGame ? styles.active : undefined}>Minesweeper</button>
-          <button onClick={this.handleShowCharts} className={!this.props.showGame ? styles.active : undefined}>High Scores</button>
+          <button onClick={this.handleShowGame} className={this.props.game.showGame ? styles.active : undefined}>Minesweeper</button>
+          <button onClick={this.handleShowCharts} className={!this.props.game.showGame ? styles.active : undefined}>High Scores</button>
         </div>
-        <div className={styles.gameWrapper} style={{display: !this.props.showGame ? 'none' : undefined}}>
+        <div className={styles.gameWrapper} style={{display: !this.props.game.showGame ? 'none' : undefined}}>
           <div className={styles.gameHeader}>
-            <p><i className="fa fa-bomb"/>{this.props.numFlagsLeft}</p>
+            <p><i className="fa fa-bomb"/>{this.props.game.numFlagsLeft}</p>
             <p><i className="fa fa-clock-o"/>{timeDisplay}</p>
           </div>
           <div>
             <Board
-              rows={this.props.rows}
-              columns={this.props.columns}
-              board={this.props.board}
+              rows={this.props.gameDimensions.rows}
+              columns={this.props.gameDimensions.columns}
+              board={this.props.game.board}
               handleClick={this.handleClick}
               handleFlag={this.handleFlag}
             />
@@ -180,7 +183,7 @@ class Game extends React.Component {
             <button onClick={this.handleNewGame}> New Game </button>
           </div>
         </div>
-        <HighScoreChart showGame={this.props.showGame} highscores={this.props.highscores}/>
+        <HighScoreChart showGame={this.props.game.showGame} highscores={this.props.highscores}/>
       </div>
     );
   }
@@ -193,10 +196,10 @@ class Game extends React.Component {
     emptySpaces.add(i);
 
     // Short name assignments
-    const col = this.props.columns;
-    const len = this.props.rows * col;
-    const mineIndices = this.props.mineIndices;
-    const board = this.props.board;
+    const col = this.props.gameDimensions.columns;
+    const len = this.props.gameDimensions.rows * col;
+    const mineIndices = this.props.game.mineIndices;
+    const board = this.props.game.board;
 
     let prevSize;
 
@@ -264,17 +267,25 @@ class Game extends React.Component {
 
 const mapStateToProps = (state) => ({
   // Timer
-  seconds: state.timer.seconds,
+  timer: {
+    seconds: state.timer.seconds,
+    hasStarted: state.timer.hasStarted
+  },
   // GameDimensions
-  rows: state.gameDimensions.rows,
-  columns: state.gameDimensions.columns,
-  totalMines: state.gameDimensions.totalMines,
+  gameDimensions: {
+    rows: state.gameDimensions.rows,
+    columns: state.gameDimensions.columns,
+    totalMines: state.gameDimensions.totalMines,
+  },
   // Game
-  showGame: state.game.showGame,
-  board: state.game.board,
-  mineIndices: state.game.mineIndices,
-  numRevealed: state.game.numRevealed,
-  numFlagsLeft: state.game.numFlagsLeft,
+  game: {
+    showGame: state.game.showGame,
+    board: state.game.board,
+    mineIndices: state.game.mineIndices,
+    numRevealed: state.game.numRevealed,
+    numFlagsLeft: state.game.numFlagsLeft,
+  },
+
   // Highscores
   highscores: state.highscores
 });
