@@ -140,10 +140,10 @@ class Game extends React.Component {
     return (
       <div className={styles.container}>
         <div className={styles.gameNavWrapper}>
-          <button onClick={this.handleShowGame} className={this.props.showGame && styles.active}>Minesweeper</button>
-          <button onClick={this.handleShowCharts} className={!this.props.showGame && styles.active}>High Scores</button>
+          <button onClick={this.handleShowGame} className={this.props.showGame ? styles.active : undefined}>Minesweeper</button>
+          <button onClick={this.handleShowCharts} className={!this.props.showGame ? styles.active : undefined}>High Scores</button>
         </div>
-        <div className={styles.gameWrapper} style={{display: !this.props.showGame && 'none'}}>
+        <div className={styles.gameWrapper} style={{display: !this.props.showGame ? 'none' : undefined}}>
           <div className={styles.gameHeader}>
             <p><i className="fa fa-bomb"/>{this.props.numFlagsLeft}</p>
             <p><i className="fa fa-clock-o"/>{timeDisplay}</p>
