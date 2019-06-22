@@ -8,16 +8,24 @@ import { generateRandomMines } from '../helpers/helpers'
 
 // Initial State of the app
 const initialState = {
-  rows: EASY_ROWS,
-  columns: EASY_COLUMNS,
-  board: [],
-  totalMines: EASY_MINES,
-  bombIndices: [],
-  started: false,
-  seconds: 0,
-  numRevealed: 0,
-  numFlagsLeft: EASY_MINES,
-  showGame: true
+  timer: {
+    started: false,
+    seconds: 0,
+  },
+  gameDimensions: {
+    rows: EASY_ROWS,
+    columns: EASY_COLUMNS,
+    totalMines: EASY_MINES,
+  },
+  game: {
+    showGame: true,
+    board: [],
+    mineIndices: [],
+    numRevealed: 0,
+    numFlagsLeft: EASY_MINES,
+  },
+  highscores: [],
+  // loading: false
 }
 
 // Reducer methods
@@ -53,10 +61,34 @@ export default function reducer(state = initialState, action) {
       return changeToMedium(state, action);
     // Change to hard mode
     case "CHANGE-TO-HARD":
-        return changeToHard(state, action);
+      return changeToHard(state, action);
     // Toggle show game / show high scores
     case "TOGGLE-SHOW-GAME":
-        return toggleShowGame(state, action);
+      return toggleShowGame(state, action);
+    case "GET-HIGHSCORES":
+      // let highscores;
+      //
+      // fetch('/api/highscores')
+      //   .then(res => res.json())
+      //   .then(data => highscores = data)
+      //   .then(() => console.log(highscores));
+      // console.log(highscores);
+      //
+      // return {
+      //   ...state,
+      //   highscores: highscores
+      // };
+      return state;
+    case "DELETE-HIGHSCORE":
+      console.log(state);
+      return state;
+    case "ADD-HIGHSCORE":
+      return state;
+    case "LOADING-FINISHED":
+      return {
+        ...state,
+        loading: true
+      };
     default:
       return state;
   }
@@ -64,17 +96,18 @@ export default function reducer(state = initialState, action) {
 
 // Configure a new board
 function configureNewBoard(state, action) {
-  const col = state.columns;
-  const row = state.rows;
+  const col = state.gameDimensions.columns;
+  const row = state.gameDimensions.rows;
   const len = col * row;
   const newBoard = Array(col * row);
+  const totalMines = state.gameDimensions.totalMines
 
   // Randomize Mines
-  let bombIndices = generateRandomMines(row, col, state.totalMines);
+  let mineIndices = generateRandomMines(row, col, totalMines);
 
   // Create cells
   for (let i = 0; i < newBoard.length; i++) {
-    let val = bombIndices.includes(i) ? 'b' : 0;
+    let val = mineIndices.includes(i) ? 'b' : 0;
     let cell = {
       index: i,
       isRevealed: false,
@@ -85,7 +118,7 @@ function configureNewBoard(state, action) {
   }
 
   // Set number values
-  bombIndices.forEach(index => {
+  mineIndices.forEach(index => {
     if (index-1 >= 0 && index % col !== 0)          newBoard[index-1].value++;
     if (index-col+1 >= 0 && (index+1) % col !== 0)  newBoard[index-col+1].value++;
     if (index-col >= 0)                             newBoard[index-col].value++;
@@ -104,78 +137,95 @@ function configureNewBoard(state, action) {
 
   return {
     ...state,
-    bombIndices: bombIndices,
-    board: newBoard,
-    seconds: 0,
-    started: false,
-    numRevealed: 0,
-    numFlagsLeft: state.totalMines
+    timer: {
+      started: false,
+      seconds: 0
+    },
+    game: {
+      ...state.game,
+      board: newBoard,
+      mineIndices: mineIndices,
+      numRevealed: 0,
+      numFlagsLeft: state.gameDimensions.totalMines
+    }
   };
 }
 
 // Reveal a cell
 function revealCell(state, action) {
   const index = action.index;
-  const newClickedBoard = state.board.slice(0);
-  const currIsRevealed = state.board[index].isRevealed;
+  const newClickedBoard = state.game.board.slice(0);
+  const currIsRevealed = state.game.board[index].isRevealed;
 
   newClickedBoard[index] = {
-    ...state.board[index],
+    ...state.game.board[index],
     isRevealed: true,
   }
 
   return !currIsRevealed ? {
     ...state,
-    board: newClickedBoard,
-    numRevealed: ++state.numRevealed
+    game: {
+      ...state.game,
+      board: newClickedBoard,
+      numRevealed: ++state.game.numRevealed
+    }
   } : state;
 }
 
 // Flag a cell
 function flagCell(state, action) {
   const index = action.index;
-  const newFlaggedBoard = state.board.slice(0);
+  const newFlaggedBoard = state.game.board.slice(0);
 
   newFlaggedBoard[index] = {
-    ...state.board[index],
+    ...state.game.board[index],
     isFlagged: true
   }
 
-  const cellIsRevealed = state.board[index].isRevealed;
-  const numFlagsLeft = state.numFlagsLeft;
+  const cellIsRevealed = state.game.board[index].isRevealed;
+  const numFlagsLeft = state.game.numFlagsLeft;
 
   return !cellIsRevealed && numFlagsLeft > 0 ? {
     ...state,
-    board: newFlaggedBoard,
-    numFlagsLeft: --state.numFlagsLeft
+    game: {
+      ...state.game,
+      board: newFlaggedBoard,
+      numFlagsLeft: --state.game.numFlagsLeft
+    }
   } : state;
 }
 
 // Unflag a cell
 function unflagCell(state, action) {
   const index = action.index;
-  const newUnflaggedBoard = state.board.slice(0);
-  const cellIsFlagged = state.board[index].isFlagged;
+  const newUnflaggedBoard = state.game.board.slice(0);
+  const cellIsFlagged = state.game.board[index].isFlagged;
 
   newUnflaggedBoard[index] = {
-    ...state.board[index],
+    ...state.game.board[index],
     isFlagged: false
   }
 
   return cellIsFlagged ? {
     ...state,
-    board: newUnflaggedBoard,
-    numFlagsLeft: ++state.numFlagsLeft
+    game: {
+      ...state.game,
+      board: newUnflaggedBoard,
+      numFlagsLeft: ++state.game.numFlagsLeft
+    }
   } : state;
 }
 
 // Increment time
 function incrementTime(state, action) {
-  const gameHasStarted = state.started;
+  const gameHasStarted = state.timer.started;
 
   return gameHasStarted ? {
     ...state,
-    seconds: ++state.seconds
+    timer: {
+      ...state.timer,
+      seconds: ++state.timer.seconds
+    }
   } : state;
 }
 
@@ -183,60 +233,79 @@ function incrementTime(state, action) {
 function startClock(state, action) {
   return {
     ...state,
-    started: true
+    timer: {
+      ...state.timer,
+      started: true
+    }
   }
 }
 
 // Clear the game board
 function restartBoard(state, action) {
-  const clearedBoard = state.board.map(cell => {
+  const clearedBoard = state.game.board.map(cell => {
     return {
       ...cell,
       isRevealed: false,
       isFlagged: false
     };
   });
+
   return {
     ...state,
-    totalMines: state.totalMines,
-    board: clearedBoard,
-    seconds: 0,
-    started: false,
-    numRevealed: 0,
-    numFlagsLeft: state.totalMines
+    timer: {
+      started: false,
+      seconds: 0
+    },
+    game: {
+      ...state.game,
+      board: clearedBoard,
+      numRevealed: 0,
+      numFlagsLeft: state.gameDimensions.totalMines
+    }
+    // totalMines: state.gameDimensions.totalMines,
   }
 }
 
 function changeToEasy(state, action) {
   return {
     ...state,
-    rows: EASY_ROWS,
-    columns: EASY_COLUMNS,
-    totalMines: EASY_MINES,
-    numFlagsLeft: EASY_MINES
+    gameDimensions: {
+      rows: EASY_ROWS,
+      columns: EASY_COLUMNS,
+      numFlagsLeft: EASY_MINES
+    }
+    // totalMines: EASY_MINES,
   }
 }
 function changeToMedium(state, action) {
   return {
     ...state,
-    rows: MEDIUM_ROWS,
-    columns: MEDIUM_COLUMNS,
-    totalMines: MEDIUM_MINES,
-    numFlagsLeft: MEDIUM_MINES
+    gameDimensions: {
+      rows: MEDIUM_ROWS,
+      columns: MEDIUM_COLUMNS,
+      numFlagsLeft: MEDIUM_MINES
+    }
+    // totalMines: MEDIUM_MINES,
   }
 }
 function changeToHard(state, action) {
   return {
     ...state,
-    rows: HARD_ROWS,
-    columns: HARD_COLUMNS,
-    totalMines: HARD_MINES,
-    numFlagsLeft: HARD_MINES
+    gameDimensions: {
+      rows: HARD_ROWS,
+      columns: HARD_COLUMNS,
+      numFlagsLeft: HARD_MINES
+    }
+    // totalMines: HARD_MINES,
   }
 }
 function toggleShowGame(state, action) {
   return {
     ...state,
-    showGame: !state.showGame
+    game: {
+      ...state.game,
+      showGame: !state.game.showGame
+    }
+    // showGame: !state.game.showGame
   }
 }

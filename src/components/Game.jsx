@@ -39,6 +39,10 @@ class Game extends React.Component {
 
     // Set the timer
     setInterval(() => this.props.dispatch({type: "INCREMENT-TIME"}), 1000);
+
+    // Get highscores
+    this.props.dispatch({type: "GET-HIGHSCORES"});
+
   }
 
   // Handle a click on a cell to reveal a cell
@@ -176,7 +180,7 @@ class Game extends React.Component {
             <button onClick={this.handleNewGame}> New Game </button>
           </div>
         </div>
-        <HighScoreChart showGame={this.props.showGame}/>
+        <HighScoreChart showGame={this.props.showGame} highscores={this.props.highscores}/>
       </div>
     );
   }
@@ -191,7 +195,7 @@ class Game extends React.Component {
     // Short name assignments
     const col = this.props.columns;
     const len = this.props.rows * col;
-    const bombIndices = this.props.bombIndices;
+    const mineIndices = this.props.mineIndices;
     const board = this.props.board;
 
     let prevSize;
@@ -209,13 +213,13 @@ class Game extends React.Component {
         let top = index - col;
         let bottom = index + col;
 
-        if (top >= 0 && !bombIndices.includes(top) && board[top].value === 0)
+        if (top >= 0 && !mineIndices.includes(top) && board[top].value === 0)
           emptySpaces.add(top);
-        if (left >= 0 && !bombIndices.includes(left) && board[left].value === 0)
+        if (left >= 0 && !mineIndices.includes(left) && board[left].value === 0)
           emptySpaces.add(left);
-        if (right < len && !bombIndices.includes(right) && board[right].value === 0)
+        if (right < len && !mineIndices.includes(right) && board[right].value === 0)
           emptySpaces.add(right);
-        if (bottom < len && !bombIndices.includes(bottom) && board[bottom].value === 0)
+        if (bottom < len && !mineIndices.includes(bottom) && board[bottom].value === 0)
           emptySpaces.add(bottom);
       });
     } while (emptySpaces.size !== prevSize)
@@ -235,21 +239,21 @@ class Game extends React.Component {
       let bottom = index + col;
       let bottomRight = isRightMargin ? (index + col + 1) : 1000;
 
-      if (topLeft >= 0 && !bombIndices.includes(topLeft) && board[topLeft].value !== 'b' && board[topLeft].value !== 0)
+      if (topLeft >= 0 && !mineIndices.includes(topLeft) && board[topLeft].value !== 'b' && board[topLeft].value !== 0)
         border.add(topLeft);
-      if (top >= 0 && !bombIndices.includes(top) && board[top].value !== 'b' && board[top].value !== 0)
+      if (top >= 0 && !mineIndices.includes(top) && board[top].value !== 'b' && board[top].value !== 0)
         border.add(top);
-      if (topRight >= 0 && !bombIndices.includes(topRight) && board[topRight].value !== 'b' && board[topRight].value !== 0)
+      if (topRight >= 0 && !mineIndices.includes(topRight) && board[topRight].value !== 'b' && board[topRight].value !== 0)
         border.add(topRight);
-      if (left >= 0 && !bombIndices.includes(left) && board[left].value !== 'b' && board[left].value !== 0)
+      if (left >= 0 && !mineIndices.includes(left) && board[left].value !== 'b' && board[left].value !== 0)
         border.add(left);
-      if (right < len && !bombIndices.includes(right) && board[right].value !== 'b' && board[right].value !== 0)
+      if (right < len && !mineIndices.includes(right) && board[right].value !== 'b' && board[right].value !== 0)
         border.add(right);
-      if (bottomLeft < len && !bombIndices.includes(bottomLeft) && board[bottomLeft].value !== 'b' && board[bottomLeft].value !== 0)
+      if (bottomLeft < len && !mineIndices.includes(bottomLeft) && board[bottomLeft].value !== 'b' && board[bottomLeft].value !== 0)
         border.add(bottomLeft);
-      if (bottom < len && !bombIndices.includes(bottom) && board[bottom].value !== 'b' && board[bottom].value !== 0)
+      if (bottom < len && !mineIndices.includes(bottom) && board[bottom].value !== 'b' && board[bottom].value !== 0)
         border.add(bottom);
-      if (bottomRight < len && !bombIndices.includes(bottomRight) && board[bottomRight].value !== 'b' && board[bottomRight].value !== 0)
+      if (bottomRight < len && !mineIndices.includes(bottomRight) && board[bottomRight].value !== 'b' && board[bottomRight].value !== 0)
         border.add(bottomRight);
     });
 
@@ -259,15 +263,20 @@ class Game extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  rows: state.rows,
-  columns: state.columns,
-  board: state.board,
-  totalMines: state.totalMines,
-  bombIndices: state.bombIndices,
-  seconds: state.seconds,
-  numRevealed: state.numRevealed,
-  numFlagsLeft: state.numFlagsLeft,
-  showGame: state.showGame
+  // Timer
+  seconds: state.timer.seconds,
+  // GameDimensions
+  rows: state.gameDimensions.rows,
+  columns: state.gameDimensions.columns,
+  totalMines: state.gameDimensions.totalMines,
+  // Game
+  showGame: state.game.showGame,
+  board: state.game.board,
+  mineIndices: state.game.mineIndices,
+  numRevealed: state.game.numRevealed,
+  numFlagsLeft: state.game.numFlagsLeft,
+  // Highscores
+  highscores: state.highscores
 });
 
 export default connect(mapStateToProps)(Game);
