@@ -1,9 +1,22 @@
 import React from 'react';
+
+// Components
 import Board from './Board.jsx';
 import HighScoreChart from './HighScoreChart.jsx';
+
+// Redux and actions
 import { connect } from 'react-redux';
+import {
+  CONFIGURE_NEW_BOARD, INCREMENT_TIME, START_CLOCK,
+  REVEAL_CELL, FLAG_CELL, UNFLAG_CELL, RESTART_BOARD,
+  CHANGE_TO_EASY, CHANGE_TO_MEDIUM, CHANGE_TO_HARD,
+  TOGGLE_SHOW_GAME
+} from '../actions/types';
+
+// Css modules
 import styles from '../css-modules/Game.module.css';
 
+// Component that contains the board, controls, and highscores
 class Game extends React.Component {
   constructor(props) {
     super(props);
@@ -35,14 +48,13 @@ class Game extends React.Component {
   // Initialize game when Game is mounted
   componentDidMount() {
     // Initialize game board
-    this.props.dispatch({type: "CONFIGURE-NEW-BOARD"});
+    this.props.dispatch({type: CONFIGURE_NEW_BOARD});
 
     // Set the timer
-    setInterval(() => this.props.dispatch({type: "INCREMENT-TIME"}), 1000);
+    setInterval(() => this.props.dispatch({type: INCREMENT_TIME}), 1000);
 
     // Get highscores
-    this.props.dispatch({type: "GET-HIGHSCORES"});
-
+    // this.props.dispatch({type: "GET-HIGHSCORES"});
   }
 
   // Handle a click on a cell to reveal a cell
@@ -55,11 +67,11 @@ class Game extends React.Component {
 
     // Start the clock if first click
     if (!this.props.timer.hasStarted)
-      this.props.dispatch({type: "START-CLOCK"});
+      this.props.dispatch({type: START_CLOCK});
 
     // Click the cell if it hasn't been revealed
     if (!cellClicked.isRevealed && !cellClicked.isFlagged)
-      this.props.dispatch({type: "REVEAL-CELL", index: cellIndex});
+      this.props.dispatch({type: REVEAL_CELL, index: cellIndex});
 
     // Check if bomb was clicked
     if (cellClicked.value === 'b') {
@@ -80,38 +92,38 @@ class Game extends React.Component {
 
     // Start the clock if first click
     if (!this.props.timer.hasStarted)
-      this.props.dispatch({type: "START-CLOCK"});
+      this.props.dispatch({type: START_CLOCK});
 
     if (!cellFlagged.isFlagged && totalMines > 0) {
-      this.props.dispatch({type: "FLAG-CELL", index: cellIndex});
+      this.props.dispatch({type: FLAG_CELL, index: cellIndex});
     }
     else if (cellFlagged.isFlagged){
-      this.props.dispatch({type: "UNFLAG-CELL", index: cellIndex});
+      this.props.dispatch({type: UNFLAG_CELL, index: cellIndex});
     }
   }
 
   // Clear the board
   handleRestart() {
-    this.props.dispatch({type: "RESTART-BOARD"});
+    this.props.dispatch({type: RESTART_BOARD});
   }
   // Create a whole new board
   handleNewGame() {
-    this.props.dispatch({type: "CONFIGURE-NEW-BOARD"});
+    this.props.dispatch({type: CONFIGURE_NEW_BOARD});
   }
   // Change the mode to easy if it isn't already
   handleEasyMode() {
-    this.props.dispatch({type: "CHANGE-TO-EASY"});
-    this.props.dispatch({type: "CONFIGURE-NEW-BOARD"});
+    this.props.dispatch({type: CHANGE_TO_EASY});
+    this.props.dispatch({type: CONFIGURE_NEW_BOARD});
   }
   // Change the mode to mediium if it isn't already
   handleMediumMode() {
-    this.props.dispatch({type: "CHANGE-TO-MEDIUM"});
-    this.props.dispatch({type: "CONFIGURE-NEW-BOARD"});
+    this.props.dispatch({type: CHANGE_TO_MEDIUM});
+    this.props.dispatch({type: CONFIGURE_NEW_BOARD});
   }
   // Change the mode to hard if it isn't already
   handleHardMode() {
-    this.props.dispatch({type: "CHANGE-TO-HARD"});
-    this.props.dispatch({type: "CONFIGURE-NEW-BOARD"});
+    this.props.dispatch({type: CHANGE_TO_HARD});
+    this.props.dispatch({type: CONFIGURE_NEW_BOARD});
   }
   // Check if the win condition has been met
   checkWinCondition() {
@@ -127,11 +139,11 @@ class Game extends React.Component {
   }
   handleShowGame() {
     if (!this.props.game.showGame)
-      this.props.dispatch({type: "TOGGLE-SHOW-GAME"});
+      this.props.dispatch({type: TOGGLE_SHOW_GAME});
   }
   handleShowCharts() {
     if (this.props.game.showGame)
-      this.props.dispatch({type: "TOGGLE-SHOW-GAME"});
+      this.props.dispatch({type: TOGGLE_SHOW_GAME});
   }
 
   // Render the component
@@ -262,7 +274,7 @@ class Game extends React.Component {
     });
 
     let all = new Set([...emptySpaces, ...border]);
-    all.forEach(cell => this.props.dispatch({type: "REVEAL-CELL", index: cell}));
+    all.forEach(cell => this.props.dispatch({type: REVEAL_CELL, index: cell}));
   }
 }
 

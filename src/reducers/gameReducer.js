@@ -1,5 +1,10 @@
-// import actions
-// Constants
+// Actions
+import {
+  CONFIGURE_NEW_BOARD, TOGGLE_SHOW_GAME,
+  REVEAL_CELL, FLAG_CELL, UNFLAG_CELL, RESTART_BOARD,
+  CHANGE_TO_EASY, CHANGE_TO_MEDIUM, CHANGE_TO_HARD
+} from '../actions/types'
+// Game Constants
 import {
   EASY_ROWS, EASY_COLUMNS,
   MEDIUM_ROWS, MEDIUM_COLUMNS,
@@ -24,41 +29,34 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     // Make a new board
-    case "CONFIGURE-NEW-BOARD":
+    case CONFIGURE_NEW_BOARD:
       return configureNewBoard(state, action);
     // Toggle show game / show high scores
-    case "TOGGLE-SHOW-GAME":
+    case TOGGLE_SHOW_GAME:
       return toggleShowGame(state, action);
     // Reveals a cell
-    case "REVEAL-CELL":
+    case REVEAL_CELL:
       return revealCell(state, action);
     // Flag a cell
-    case "FLAG-CELL":
+    case FLAG_CELL:
       return flagCell(state, action);
     // Unflag a cell
-    case "UNFLAG-CELL":
+    case UNFLAG_CELL:
       return unflagCell(state, action);
     // Restart board with the same cells
-    case "RESTART-BOARD":
+    case RESTART_BOARD:
       return restartBoard(state, action);
     // Change to easy mode
-    case "CHANGE-TO-EASY":
+    case CHANGE_TO_EASY:
       return changeToEasy(state, action);
     // Change to medium mode
-    case "CHANGE-TO-MEDIUM":
+    case CHANGE_TO_MEDIUM:
       return changeToMedium(state, action);
     // Change to hard mode
-    case "CHANGE-TO-HARD":
+    case CHANGE_TO_HARD:
       return changeToHard(state, action);
     default:
       return state;
-      // return {
-      //   ...state,
-      //   rows: HARD_ROWS,
-      //   columns: HARD_COLUMNS,
-      //   numFlagsLeft: HARD_MINES
-      // }
-
   }
 }
 
