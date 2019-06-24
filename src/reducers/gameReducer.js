@@ -121,17 +121,21 @@ function toggleShowGame(state, action) {
 function revealCell(state, action) {
   const index = action.index;
   const newClickedBoard = state.board.slice(0);
+  const cellClickedIsNotBomb = state.board[index].value !== 'b';
   const cellIsRevealed = state.board[index].isRevealed;
 
   newClickedBoard[index] = {
     ...state.board[index],
     isRevealed: true,
   }
+  let numRevealed = state.numRevealed;
+  if (cellClickedIsNotBomb)
+    numRevealed++;
 
   return !cellIsRevealed ? {
     ...state,
     board: newClickedBoard,
-    numRevealed: ++state.numRevealed
+    numRevealed: numRevealed
   } : state;
 }
 
