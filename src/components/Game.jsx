@@ -76,7 +76,8 @@ class Game extends React.Component {
   // cellIndex - the index of the cell that was right clicked
   handleFlag(cellIndex) {
     const cellFlagged = this.props.game.board[cellIndex];
-    const totalMines = this.props.gameDimensions.totalMines;
+    const totalMines = this.props.game.totalMines;
+
     // Start the clock if first click
     if (!this.props.timer.hasStarted)
       this.props.dispatch({type: "START-CLOCK"});
@@ -114,8 +115,8 @@ class Game extends React.Component {
   }
   // Check if the win condition has been met
   checkWinCondition() {
-    const total = this.props.gameDimensions.rows * this.props.gameDimensions.columns;
-    const totalMines = this.props.gameDimensions.totalMines;
+    const total = this.props.game.rows * this.props.game.columns;
+    const totalMines = this.props.game.totalMines;
 
     return (total <= this.props.game.numRevealed + totalMines)
   }
@@ -157,8 +158,8 @@ class Game extends React.Component {
           </div>
           <div>
             <Board
-              rows={this.props.gameDimensions.rows}
-              columns={this.props.gameDimensions.columns}
+              rows={this.props.game.rows}
+              columns={this.props.game.columns}
               board={this.props.game.board}
               handleClick={this.handleClick}
               handleFlag={this.handleFlag}
@@ -196,8 +197,8 @@ class Game extends React.Component {
     emptySpaces.add(i);
 
     // Short name assignments
-    const col = this.props.gameDimensions.columns;
-    const len = this.props.gameDimensions.rows * col;
+    const col = this.props.game.columns;
+    const len = this.props.game.rows * col;
     const mineIndices = this.props.game.mineIndices;
     const board = this.props.game.board;
 
@@ -271,14 +272,11 @@ const mapStateToProps = (state) => ({
     seconds: state.timer.seconds,
     hasStarted: state.timer.hasStarted
   },
-  // GameDimensions
-  gameDimensions: {
-    rows: state.gameDimensions.rows,
-    columns: state.gameDimensions.columns,
-    totalMines: state.gameDimensions.totalMines,
-  },
   // Game
   game: {
+    rows: state.game.rows,
+    columns: state.game.columns,
+    totalMines: state.game.totalMines,
     showGame: state.game.showGame,
     board: state.game.board,
     mineIndices: state.game.mineIndices,

@@ -4,16 +4,12 @@ import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 
 // Redux Stuff
-import { createStore } from "redux";
+import store from './store';
 import { Provider } from "react-redux";
-import reducer from './reducers/reducer.js'
 
 // App Stuff
 import './index.css';
 import App from './App';
-
-// Create Redux store
-const store = createStore(reducer);
 
 // Render
 ReactDOM.render(

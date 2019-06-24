@@ -3,6 +3,7 @@ import styles from '../css-modules/HighScoreChart.module.css';
 
 function HighScoreChart(props) {
   // fetch here
+  console.log(props.highscores);
 
   return (
     <div className={styles.chartWrapper} style={{display: props.showGame && 'none'}}>
