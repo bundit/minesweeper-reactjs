@@ -31,3 +31,19 @@ export const fetchHardHighscores = () => dispatch => {
     })
   );
 }
+
+export const addHighscore = scoreData => dispatch => {
+  fetch('/api/highscores', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(scoreData)
+  })
+    .then(res => res.json())
+    .then(score => dispatch({
+      type: ADD_HIGHSCORE,
+      payload: score
+    })
+  );
+}
