@@ -1,0 +1,31 @@
+.formWrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -100px;
+  margin-left: -100px;
+  width: 200px;
+  height: 200px;
+  background-color: #61dafb;
+  border: 1px black solid;
+}
+.formWrapper h4 {
+  color: white;
+}
+.formWrapper form {
+  display: grid;
+  grid-template-rows: 1fr 2fr;
+}
+.formTitleWrapper {
+  background-color: #20232a;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+/* 61dafb */
+/* 20232a */
