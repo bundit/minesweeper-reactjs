@@ -16,6 +16,7 @@ import {
 import { generateRandomMines } from '../helpers/helpers'
 
 const initialState = {
+  mode: "EASY",
   rows: EASY_ROWS,
   columns: EASY_COLUMNS,
   totalMines: EASY_MINES,
@@ -198,6 +199,7 @@ function restartBoard(state, action) {
 function changeToEasy(state, action) {
   return {
     ...state,
+    mode: "EASY",
     rows: EASY_ROWS,
     columns: EASY_COLUMNS,
     totalMines: EASY_MINES,
@@ -207,6 +209,7 @@ function changeToEasy(state, action) {
 function changeToMedium(state, action) {
   return {
     ...state,
+    mode: "MEDIUM",
     rows: MEDIUM_ROWS,
     columns: MEDIUM_COLUMNS,
     totalMines: MEDIUM_MINES
@@ -216,6 +219,7 @@ function changeToMedium(state, action) {
 function changeToHard(state, action) {
   return {
     ...state,
+    mode: "HARD",
     rows: HARD_ROWS,
     columns: HARD_COLUMNS,
     totalMines: HARD_MINES,

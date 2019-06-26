@@ -3,6 +3,7 @@ import React from 'react';
 // Components
 import Board from './Board.jsx';
 import HighScoreChart from './HighScoreChart.jsx';
+import ScoreForm from './ScoreForm.jsx';
 
 // Redux and actions
 import { connect } from 'react-redux';
@@ -10,7 +11,7 @@ import {
   CONFIGURE_NEW_BOARD, INCREMENT_TIME, START_CLOCK,
   REVEAL_CELL, FLAG_CELL, UNFLAG_CELL, RESTART_BOARD,
   CHANGE_TO_EASY, CHANGE_TO_MEDIUM, CHANGE_TO_HARD,
-  TOGGLE_SHOW_GAME
+  TOGGLE_SHOW_GAME, TOGGLE_SHOW_FORM, SAVE_TIMESTAMP
 } from '../actions/types';
 
 // Css modules
@@ -39,8 +40,7 @@ class Game extends React.Component {
   }
 
   // Check win condition after every change
-  componentDidUpdate(prevProps) {
-
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.game.numRevealed !== this.props.game.numRevealed)
       if (this.checkWinCondition())
         this.handleWinCondition();
@@ -52,9 +52,6 @@ class Game extends React.Component {
 
     // Set the timer
     setInterval(() => this.props.dispatch({type: INCREMENT_TIME}), 1000);
-
-    // Get highscores
-    // this.props.dispatch({type: "GET-HIGHSCORES"});
   }
 
   // Handle a click on a cell to reveal a cell
@@ -135,7 +132,9 @@ class Game extends React.Component {
   // Do something when win condition is met
   // Call to action if so
   handleWinCondition() {
-    alert('u won');
+    alert('You Won!');
+    this.props.dispatch({type: TOGGLE_SHOW_FORM});
+    this.props.dispatch({type: SAVE_TIMESTAMP, time: this.props.timer.seconds, mode: this.props.game.mode});
   }
   handleShowGame() {
     if (!this.props.game.showGame)
@@ -196,7 +195,8 @@ class Game extends React.Component {
             <button onClick={this.handleNewGame}> New Game </button>
           </div>
         </div>
-        <HighScoreChart showGame={this.props.game.showGame} highscores={this.props.highscores}/>
+        <HighScoreChart />
+        <ScoreForm showForm={this.props.highscores.showForm} time={this.props.highscores.timestamp} mode={this.props.highscores.gameMode} />
       </div>
     );
   }
@@ -286,6 +286,7 @@ const mapStateToProps = (state) => ({
   },
   // Game
   game: {
+    mode: state.game.mode,
     rows: state.game.rows,
     columns: state.game.columns,
     totalMines: state.game.totalMines,
@@ -295,7 +296,6 @@ const mapStateToProps = (state) => ({
     numRevealed: state.game.numRevealed,
     numFlagsLeft: state.game.numFlagsLeft,
   },
-
   // Highscores
   highscores: state.highscores
 });

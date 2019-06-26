@@ -41,9 +41,11 @@ export const addHighscore = scoreData => dispatch => {
     body: JSON.stringify(scoreData)
   })
     .then(res => res.json())
-    .then(score => dispatch({
-      type: ADD_HIGHSCORE,
-      payload: score
-    })
+    .then(score => {
+        dispatch({
+        type: ADD_HIGHSCORE,
+        payload: score
+      })
+    }
   );
 }
