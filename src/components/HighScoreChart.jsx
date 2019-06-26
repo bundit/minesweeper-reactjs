@@ -15,13 +15,13 @@ class HighScoreChart extends React.Component {
   }
 
   render() {
-    const easyHighscores = this.props.easyHighscores.map((easy, index) => (
+    const easyHighscores = this.props.easyHighscores.slice(0,3).map((easy, index) => (
       <li key={index}><p>{index+1}. {easy.username}</p> <p>{easy.time} seconds</p> </li>
     ));
-    const mediumHighscores = this.props.mediumHighscores.map((medium, index) => (
+    const mediumHighscores = this.props.mediumHighscores.slice(0,3).map((medium, index) => (
       <li key={index}><p>{index+1}. {medium.username}</p> <p>{medium.time} seconds</p> </li>
     ));
-    const hardHighscores = this.props.hardHighscores.map((hard, index) => (
+    const hardHighscores = this.props.hardHighscores.slice(0,3).map((hard, index) => (
       <li key={index}><p>{index+1}. {hard.username}</p> <p>{hard.time} seconds</p> </li>
     ));
     return (
@@ -58,6 +58,7 @@ HighScoreChart.propTypes = {
 }
 
 const mapStateToProps = state => ({
+  showGame: state.game.showGame,
   easyHighscores: state.highscores.easy,
   mediumHighscores: state.highscores.medium,
   hardHighscores: state.highscores.hard
