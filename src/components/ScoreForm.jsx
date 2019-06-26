@@ -15,6 +15,7 @@ class ScoreForm extends React.Component {
     }
 
     this.onChange = this.onChange.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
   onChange(e) {
@@ -25,12 +26,17 @@ class ScoreForm extends React.Component {
   onSubmit(e) {
     e.preventDefault();
 
+    if (this.state.username.length > 10){
+      alert('Pick a shorter name');
+      return;
+    }
+
+
     const scorePost = {
       username: this.state.username,
       time: this.props.time,
       mode: this.props.mode
     }
-
     this.props.addHighscore(scorePost);
     this.props.dispatch({type: TOGGLE_SHOW_FORM});
     this.props.dispatch({type: CONFIGURE_NEW_BOARD});
@@ -54,8 +60,8 @@ class ScoreForm extends React.Component {
               value={this.state.username}
             /> <br/>
             <div>
-              <button onClick={this.handleCancel}> Cancel</button>
               <button type="submit">Submit</button>
+              <button onClick={() => this.handleCancel}> Cancel</button>
             </div>
           </div>
         </form>
@@ -68,4 +74,11 @@ ScoreForm.propTypes = {
   addHighscore: propTypes.func.isRequired,
 }
 
-export default connect(null, { addHighscore })(ScoreForm);
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch,
+    addHighscore: score => dispatch(addHighscore(score))
+  }
+}
+
+export default connect(null, mapDispatchToProps)(ScoreForm);
