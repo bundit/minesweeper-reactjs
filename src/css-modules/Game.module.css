@@ -42,7 +42,7 @@ i {
   padding-top: 10px;
   text-align: center;
 }
-.gameControls button {
+button {
   padding: 5px;
   margin: 0 5px;
   background-color: #FFF;
